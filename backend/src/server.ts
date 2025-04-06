@@ -43,7 +43,7 @@ app.get('/api/users/me', (req: Request, res: Response) => {
 app.get('/api/organizations/:orgId/users/me', (req: Request, res: Response) => {
   res.json({
     ...mockUser,
-    organizationId: req.params.orgId || 'default_org'
+    organizationId: req.params.orgId || 'default-org' // Ensure ID exists
   });
 });
 

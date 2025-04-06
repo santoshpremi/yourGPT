@@ -11,6 +11,8 @@ import {
   useNavigationType,
 } from "react-router";
 import { loadI18n } from "./lib/i18n";
+import { redirect } from '../src/router';
+
 
 axios
   .get("../api/tunnel/sentry/config")
@@ -56,6 +58,9 @@ axios
         initReact();
       });
   });
+if (import.meta.env.DEV && !location.pathname.includes('/default-org')) {
+  redirect('/:organizationId', { params: { organizationId: 'default-org' } });
+}
 
 function initReact() {
   ReactDOM.createRoot(document.getElementById("root")!).render(<Routes />);
