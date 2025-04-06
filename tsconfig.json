@@ -1,0 +1,31 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./dist",
+    "rootDir": "./", // Set rootDir to the project root
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "types": ["vite/client", "node"],
+    "baseUrl": ".",
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@backend/*": ["./backend/src/*"],
+      "@api/*": ["./src/lib/api/*"],
+      "@types/*": ["./packages/apiTypes/src/*"]
+    }
+  },
+  "include": ["src/**/*", "backend/src/**/*"], // Include both src and backend/src
+  "exclude": ["node_modules", "**/*.spec.ts"]
+}
