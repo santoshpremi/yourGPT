@@ -1,11 +1,11 @@
 import { ModalClose, ModalDialog, Typography } from "@mui/joy";
 import { useTranslation } from "react-i18next";
-import RouteModal from "../../components/util/RouteModal.tsx";
-import { TallyForm } from "../../components/analytics/TallyForm.tsx";
-import { useOrganization } from "../../lib/api/organization.ts";
-import { TrpcProvider } from "../../lib/api/trpc/TrpcProvider.tsx";
-import { useUser } from "../../lib/api/user.ts";
-import { DelayedLoader } from "../../components/util/DelayedLoader.tsx";
+import RouteModal from "../../components/util/RouteModal";
+import { TallyForm } from "../../components/analytics/TallyForm";
+import { useOrganization } from "../../lib/api/organization";
+import { TrpcProvider } from "../../lib/api/trpc/TrpcProvider";
+import { useUser } from "../../lib/api/user";
+import { DelayedLoader } from "../../components/util/DelayedLoader";
 
 export default function Route() {
   return (

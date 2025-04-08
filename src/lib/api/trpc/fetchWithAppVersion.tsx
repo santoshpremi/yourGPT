@@ -6,32 +6,44 @@ import { toast } from "react-toastify";
 let lastAppVersion: string | null = null;
 
 export async function fetchWithAppVersion(
-  ...args: Parameters<typeof fetch>
-): ReturnType<typeof fetch> {
-  const res = await fetch(...args);
-  handleAppVersionHeader(res.headers.get("X-App-Version"));
+  input: RequestInfo,
+  init?: RequestInit
+): Promise<Response> {
+  const headers = new Headers(init?.headers);
+  
+  // Add mock version if missing
+  if (!headers.has('x-app-version')) {
+    headers.set('x-app-version', '1.0.0-mock');
+  }
+
+  const res = await fetch(input, {
+    ...init,
+    headers
+  });
+  
+  handleAppVersionHeader(res.headers.get("x-app-version"));
   return res;
 }
 
 function handleAppVersionHeader(appVersion: string | null) {
   if (!appVersion) {
-    console.error("No app version header found");
+    console.warn("No app version header found");
     return;
   }
+
   if (!lastAppVersion) {
     lastAppVersion = appVersion;
     return;
   }
+
   if (lastAppVersion !== appVersion) {
-    console.error("App version mismatch detected.");
+    console.warn("App version mismatch detected");
     toast.info(
       <div className="flex flex-col gap-2">
         {t("appVersionMismatch")}
         <Button
           className="mt-2"
-          onClick={() => {
-            window.location.reload();
-          }}
+          onClick={() => window.location.reload()}
           variant="soft"
           startDecorator={<Refresh />}
           size="sm"

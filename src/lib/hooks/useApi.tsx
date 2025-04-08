@@ -55,6 +55,9 @@ function useApiWithBasePath(basePath: string, options?: UseApiOptions) {
 
 type useApiSWROptions = Partial<SWRConfiguration>;
 
+// Modify useOrganizationSchemaResource
+
+
 export function useOrganizationSchemaResource<T extends z.ZodSchema>(
   path: string,
   schema: T,
@@ -65,11 +68,16 @@ export function useOrganizationSchemaResource<T extends z.ZodSchema>(
 
   if (data === undefined) return undefined;
 
-  if (!_.isEqual(schema.parse(data), lastParsed.current)) {
-    lastParsed.current = schema.parse(data);
+  try {
+    const parsed = schema.parse(data || {});
+    if (!_.isEqual(parsed, lastParsed.current)) {
+      lastParsed.current = parsed;
+    }
+    return lastParsed.current;
+  } catch (error) {
+    console.error('Zod validation failed:', error);
+    return undefined;
   }
-
-  return lastParsed.current;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

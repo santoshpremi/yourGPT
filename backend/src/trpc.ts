@@ -4,48 +4,56 @@ import { ApiOrganization, ApiPatchOrganization } from '../../packages/apiTypes/s
 
 const t = initTRPC.create();
 
+const mockOrganization = ApiOrganization.parse({
+  id: 'org_cm8yflh26064xmw01zbalts9c',
+  name: 'My Enterprise',
+  domain: ['deingpt.com'],
+  isAcademyOnly: false,
+  // Add all required fields from your schema
+  customPrimaryColor: '#4F46E5',
+  defaultModel: 'gpt-4',
+  tenantId: 'tenant_123',
+  defaultWorkshopId: 'workshop_123'
+});
+
 export const appRouter = t.router({
-  // Organization routes (existing)
   organization: t.router({
     getOrganization: t.procedure
       .input(z.void())
-      .query(() => 
-        ApiOrganization.parse({
-          id: 'org_cm8yflh26064xmw01zbalts9c',
-          name: 'My Enterprise',
-          domain: ['deingpt.com'],
-          isAcademyOnly: false,
-        })
-      ),
+      .output(ApiOrganization)
+      .query(() => mockOrganization),
       
     updateOrganization: t.procedure
       .input(ApiPatchOrganization)
-      .mutation(async ({ input }) => {
-        return ApiOrganization.parse({ 
-          ...input,
-          id: 'org_cm8yflh26064xmw01zbalts9c',
-          isAcademyOnly: false 
-        });
-      })
+      .output(ApiOrganization)
+      .mutation(async ({ input }) => ({
+        ...mockOrganization,
+        ...input
+      })),
+      health: t.procedure
+       .query(() => ({ status: 'ok' })),
+
   }),
 
-  // New artifact routes (added here)
   artifact: t.router({
     getVersion: t.procedure
-      .input(z.object({
-        id: z.string(),
+      .input(z.object({ id: z.string() }))
+      .output(z.object({
+        Artifact: z.object({
+          id: z.string(),
+          title: z.string(),
+          content: z.string(),
+          createdAt: z.date()
+        })
       }))
-      .query(async ({ input }) => {
-        // Example implementation
-        return {
-          Artifact: {
-            id: input.id,
-            title: 'Example Artifact',
-            content: 'Sample content',
-            createdAt: new Date(),
-          }
-        };
-      }),
+      .query(({ input }) => ({
+        Artifact: {
+          id: input.id,
+          title: 'Example Artifact',
+          content: 'Sample content',
+          createdAt: new Date()
+        }
+      }))
   })
 });
 

@@ -6,6 +6,7 @@ import {
   splitLink,
   TRPCClientError,
   unstable_httpBatchStreamLink,
+  type HTTPHeaders,
 } from "@trpc/client";
 import { createId } from "@paralleldrive/cuid2";
 import { useMemo, useState } from "react";
@@ -17,10 +18,9 @@ import { toastLink } from "./toastLink";
 import { trpc } from "./trpc";
 
 const trpcUrl = "/api/trpc";
-
 const MAX_RETRIES = 3;
 
-export const browserSessionKey = fetchSessionId(); // unique key for the browser session
+export const browserSessionKey = fetchSessionId();
 
 function fetchSessionId() {
   const sessionId = sessionStorage.getItem("sessionId");
@@ -28,7 +28,6 @@ function fetchSessionId() {
 
   const id = createId();
   sessionStorage.setItem("sessionId", id);
-
   return id;
 }
 
@@ -63,26 +62,20 @@ export function TrpcProvider({ children }: { children: React.ReactNode }) {
     i18n: { resolvedLanguage: currentLocale },
   } = useTranslation();
 
-  // Ensure currentOrganizationId is not undefined
-  const safeOrganizationId = currentOrganizationId || "";
+  const safeOrganizationId = currentOrganizationId || "default-org";
 
   const trpcClient = useMemo(() => {
-    console.log("recreating trpcClient", safeOrganizationId);
     const headers = {
       "x-deingpt-organization-id": safeOrganizationId,
       "x-deingpt-session-id": browserSessionKey,
       "x-deingpt-locale": currentLocale,
-    } as const;
+    };
 
-    const terminalLinkCommonProps = {
+    const commonConfig = {
       url: trpcUrl,
-      maxURLLength: 8000,
-      headers: (opts) => ({
-        ...opts.headers,
-        ...headers,
-      }),
+      headers: (): HTTPHeaders => headers,
       fetch: fetchWithAppVersion,
-    } as const;
+    };
 
     return trpc.createClient({
       links: [
@@ -91,11 +84,17 @@ export function TrpcProvider({ children }: { children: React.ReactNode }) {
         splitLink({
           condition: (op) =>
             isNonJsonSerializable(op.input) || !!op.context.nonSerializable,
-          true: httpLink(terminalLinkCommonProps),
+          true: httpLink(commonConfig),
           false: splitLink({
             condition: (op) => !op.context.disableStreaming,
-            true: unstable_httpBatchStreamLink(terminalLinkCommonProps),
-            false: httpBatchLink(terminalLinkCommonProps),
+            true: unstable_httpBatchStreamLink({
+              ...commonConfig,
+              maxURLLength: 8000,
+            }),
+            false: httpBatchLink({
+              ...commonConfig,
+              maxURLLength: 8000,
+            }),
           }),
         }),
       ],
