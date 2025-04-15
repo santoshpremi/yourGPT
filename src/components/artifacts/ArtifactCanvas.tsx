@@ -73,7 +73,7 @@ export default function ArtifactCanvas({ embedded }: ArtifactCanvasProps) {
       transition={{ duration: 0.2, ease: "easeInOut" }}
       className={twMerge(
         "relative flex h-full w-full flex-col",
-        embedded && "fixed bottom-0 right-0 top-0 z-50 bg-white"
+        embedded && "fixed bottom-0 right-0 top-0 z-50 bg-white",
       )}
       data-testid={ARTIFACT_CANVAS_ID}
     >

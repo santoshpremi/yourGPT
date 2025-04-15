@@ -13,7 +13,7 @@ export function handleGenericError(
   error: Error,
   customMessage: string | undefined,
   extra?: Extra,
-  propagate: boolean = false
+  propagate: boolean = false,
 ) {
   console.error("An error occurred:");
   console.trace("Error Stack:");
@@ -47,7 +47,7 @@ export function handleAxiosError(
   err: AxiosError,
   setLoggedIn: (loggedIn: boolean) => void,
   t: (key: string) => string,
-  disableErrorToast: boolean = false
+  disableErrorToast: boolean = false,
 ) {
   if (err.response?.status === 401) {
     setLoggedIn(false);
@@ -120,7 +120,7 @@ export function handleAxiosError(
 function showErrorToast(
   code: string,
   customMessage: string | undefined,
-  toastId?: string
+  toastId?: string,
 ) {
   toast.error(<ErrorToastContent code={code} customMessage={customMessage} />, {
     toastId,

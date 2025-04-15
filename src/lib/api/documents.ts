@@ -24,7 +24,7 @@ export function useUploadDocument() {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      }
+      },
     );
 
     return ApiDocumentHeader.parse(response.data);
@@ -49,6 +49,6 @@ export function useUploadDocumentWithToast() {
 export function useDocumentHeader(documentId: string) {
   return useOrganizationSchemaResource(
     `/documents/${documentId}/header`,
-    ApiDocumentHeader
+    ApiDocumentHeader,
   );
 }

@@ -75,7 +75,7 @@ export function WarningMessage({
   const inputTokens = input.length / 4;
   const documentTokens = attachedDocuments.reduce(
     (acc, doc) => acc + doc.tokens,
-    0
+    0,
   );
 
   const messageTokens = inputTokens + documentTokens;
@@ -169,7 +169,7 @@ export function WarningMessage({
   const switchToCheaperModel = () => {
     cheaperModel?.name && setModelOverride(cheaperModel?.name);
     toast.success(
-      t("switchedToModel", { model: LLM_META[cheaperModel?.name ?? ""].name })
+      t("switchedToModel", { model: LLM_META[cheaperModel?.name ?? ""].name }),
     );
 
     //close the warning
@@ -202,7 +202,7 @@ export function WarningMessage({
     <div
       className={twMerge(
         "mx-auto hidden w-[99%] items-center justify-between rounded-t-lg px-4 py-1",
-        warning.show && "flex"
+        warning.show && "flex",
       )}
       style={{
         minWidth: "240px",

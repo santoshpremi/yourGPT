@@ -13,8 +13,6 @@ import {
   getExtensionsFromMimeMap,
 } from "../../../backend/src/constants/mime";
 
-
-
 import { useUploadDocumentWithToast } from "../../lib/api/documents.ts";
 interface DocumentDropzoneProps {
   style?: SxProps;

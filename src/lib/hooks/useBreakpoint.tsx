@@ -23,7 +23,7 @@ function getBreakpoints() {
       acc[key as Breakpoint] = parseInt(_value);
       return acc;
     },
-    {} as Breakpoints
+    {} as Breakpoints,
   );
 
   return breakpoints;
@@ -36,7 +36,7 @@ function useBreakingPoint(breakpoint: Breakpoint): boolean {
   const width = breakpoints[breakpoint];
 
   const [triggered, setTriggered] = useState<boolean>(
-    width >= window.innerWidth
+    width >= window.innerWidth,
   );
 
   useEffect(() => {

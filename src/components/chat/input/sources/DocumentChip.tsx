@@ -22,7 +22,7 @@ export function DocumentChip(
       }
     | {
         loading: true;
-      }
+      },
 ) {
   const { t } = useTranslation();
   const primaryColor = usePrimaryColor();

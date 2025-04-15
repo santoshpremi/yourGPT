@@ -13,8 +13,8 @@ const useOneTimeInfoModalStore = create(
     }),
     {
       name: "one-time-info-modals",
-    }
-  )
+    },
+  ),
 );
 
 export function useOneTimeInfoModal(id: string) {

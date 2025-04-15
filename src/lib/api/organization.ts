@@ -5,7 +5,7 @@ import { skipToken } from "@tanstack/react-query";
 
 export function useOrganization({ skip }: { skip: boolean } = { skip: false }) {
   const { data } = trpc.organization.getOrganization.useQuery(
-    skip ? skipToken : undefined
+    skip ? skipToken : undefined,
   );
   return data;
 }

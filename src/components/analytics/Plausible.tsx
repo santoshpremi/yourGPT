@@ -10,8 +10,7 @@ export function Plausible() {
     if (!me?.primaryEmail || !organization?.tenantId) return;
     const script = document.createElement("script");
 
-    script.src =
-      "https://trends.adhikari.de/js/script.pageview-props.local.js";
+    script.src = "https://trends.adhikari.de/js/script.pageview-props.local.js";
     script.async = true;
 
     script.setAttribute("data-domain", "app.deingpt.com");

@@ -65,7 +65,7 @@ export function calcLevelProgress(xp: number): {
 // Range of 0 to 100
 export function normalizeCurrentProgress(
   currentLevelProgress: number,
-  level: number
+  level: number,
 ): number {
   const progress =
     (currentLevelProgress / getDeltaXpNeededForLevel(level + 1)) * 100;

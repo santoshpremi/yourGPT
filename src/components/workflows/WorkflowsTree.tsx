@@ -36,12 +36,12 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
           input.workflow.id,
           input.sourceDepartmentId,
           input.workflow.departmentId,
-          input.workflow.index
+          input.workflow.index,
         );
 
         utils.organization.department.all.setData(
           undefined,
-          updatedDepartments
+          updatedDepartments,
         );
 
         return { previousDepartments: currentDepartments };
@@ -49,7 +49,7 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
       onError: (err, input, ctx) => {
         utils.organization.department.all.setData(
           undefined,
-          ctx!.previousDepartments
+          ctx!.previousDepartments,
         );
       },
       onSettled: async () => {
@@ -79,7 +79,7 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
     });
 
     return departmentsWithFilteredWorkflows?.filter(
-      (department) => department.workflows.length > 0
+      (department) => department.workflows.length > 0,
     );
   }, [departments, searchValue]);
 
@@ -89,7 +89,7 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
     workflowId: string,
     sourceDepartmentId: string,
     targetDepartmentId: string,
-    index: number
+    index: number,
   ) {
     if (
       sourceDepartmentId === FAVORITE_DEPARTMENT_ID ||
@@ -125,7 +125,7 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
             result.draggableId,
             result.source.droppableId,
             result.destination.droppableId,
-            result.destination.index
+            result.destination.index,
           ).catch((e) => {
             console.error(e);
           });

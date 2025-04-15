@@ -20,7 +20,7 @@ export function RateLimitActions({
   const { data: enabledModels } = trpc.modelConfig.getEnabled.useQuery();
 
   const filteredModels = enabledModels?.filter(
-    (model) => model !== message.generationModel
+    (model) => model !== message.generationModel,
   );
 
   return (

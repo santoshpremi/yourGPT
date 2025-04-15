@@ -27,7 +27,7 @@ export function ContextLengthActions({
     .filter(
       (model) =>
         LLM_META[model].allowChat &&
-        LLM_META[model].contextWindow >= chatContextTokens
+        LLM_META[model].contextWindow >= chatContextTokens,
     )
     .sort();
 

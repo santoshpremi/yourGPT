@@ -14,8 +14,7 @@ export interface Artifact {
 }
 
 export type CreateVersionResponse = AsyncGenerator<
-  | { type: 'init'; newVersionId: string }
-  | { type: 'chunk'; chunk: string },
+  { type: "init"; newVersionId: string } | { type: "chunk"; chunk: string },
   void,
   unknown
 >;

@@ -5,7 +5,7 @@ export function optimisticWorkflowReorder(
   workflowId: string,
   sourceDepartmentId: string,
   targetDepartmentId: string,
-  index: number
+  index: number,
 ) {
   // filter out the workflow from the old department
   const oldDepartment = departments.find((d) => d.id === sourceDepartmentId);
@@ -13,7 +13,7 @@ export function optimisticWorkflowReorder(
   const workflow = oldDepartment.workflows.find((uc) => uc.id === workflowId);
   if (!workflow) return departments;
   oldDepartment.workflows = oldDepartment.workflows.filter(
-    (uc) => uc.id !== workflowId
+    (uc) => uc.id !== workflowId,
   );
 
   // add the workflow to the new department

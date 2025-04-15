@@ -49,7 +49,7 @@ export const toastLink: TRPCLink<AppRouter> = () => {
                 )
               )
                 toast.error(
-                  `${t("trpcErrorCodes." + (err.data?.code ?? "UNKNOWN_ERROR"))} (${op.path}) "${err.message}"`
+                  `${t("trpcErrorCodes." + (err.data?.code ?? "UNKNOWN_ERROR"))} (${op.path}) "${err.message}"`,
                 );
               break;
           }
@@ -59,6 +59,6 @@ export const toastLink: TRPCLink<AppRouter> = () => {
         complete() {
           observer.complete();
         },
-      })
+      }),
     );
 };

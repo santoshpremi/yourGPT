@@ -1,118 +1,137 @@
-import express, { Application, Request, Response } from 'express';
-import path from 'path';
-import { createExpressMiddleware } from '@trpc/server/adapters/express';
-import { appRouter } from './trpc'; // Fixed path
-import cors from 'cors';
-import { z } from "zod";
-import { sentryRouter } from '../../api/tunnel/sentry/config';
+// backend/src/server.ts
+import express, { Application, Request, Response } from "express";
+import path from "path";
+import { createExpressMiddleware } from "@trpc/server/adapters/express";
+import { appRouter } from "./trpc.js";
+import cors from "cors";
+import { fileURLToPath } from "url";
+import { v4 as uuidv4 } from 'uuid';
+
+// Type declarations
+declare global {
+  namespace Express {
+    interface Request {
+      organization: Organization;
+    }
+  }
+}
+
+interface Organization {
+  id: string;
+  name: string;
+  domain: string[];
+  logoUrl: string;
+  avatarUrl: string;
+  tenantId: string;
+  defaultWorkshopId: string;
+  customPrimaryColor: string;
+  defaultModel: string;
+  isAcademyOnly: boolean;
+}
 
 const app: Application = express();
-app.use(express.json());
-
-
 const PORT = process.env.PORT || 8003;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Add proper Sentry config endpoint
-app.get('/api/tunnel/sentry/config', (req, res) => {
-  res.json({
-    dsn: 'mock-sentry-dsn', // Hardcode for development
-    serverName: 'development'
-  });
-});
-
-// Change static file serving to:
-app.use(express.static(path.join(__dirname, '../../../../dist')));
-
-const mockUser = {
-  id: 'user_123',
-  name: 'John Doe',
-  email: 'john@meingpt.com',
-  organizationId: 'default_org', // Add this
-  // Add other required fields from your Zod schema
-  logoUrl: '',
-  avatarUrl: '',
-  customPrimaryColor: '#4F46E5',
-  defaultModel: 'gpt-4',
-  tenantId: 'tenant_123',
-  defaultWorkshopId: 'workshop_123'
-};
-
-// Middleware
-app.use(cors({ 
-  origin: 'http://localhost:3000',
+// Middleware setup
+app.use(cors({
+  origin: ['http://localhost:5173', 'http://localhost:8003'],
   credentials: true
 }));
+app.use(express.json());
+app.use(express.static(path.join(__dirname, '../../dist')));
 
-// Routes
-app.use('/api/tunnel/sentry', sentryRouter);
+// Mock database with Zod-compatible data
+const organizations = new Map<string, Organization>([
+  ['default_org', createOrganization('default_org')]
+]);
 
-app.get('/api/users/me', (req: Request, res: Response) => {
+// Organization middleware
+app.use(['/api/organizations/:orgId', '/:organizationId'], 
+  (req, res, next) => {
+    const orgId = req.params.orgId || req.params.organizationId || 'default_org';
+    
+    if (!organizations.has(orgId)) {
+      organizations.set(orgId, createOrganization(orgId));
+    }
+    
+    const organization = organizations.get(orgId);
+    if (!organization) {
+      return res.status(404).json({ error: "Organization not found" });
+    }
+    
+    req.organization = organization;
+    next();
+  }
+);
+
+// Helper function to create organizations
+function createOrganization(orgId: string): Organization {
+  return {
+    id: `org_${uuidv4().replace(/-/g, '').slice(0, 24)}`,
+    name: `Organization ${orgId}`,
+    domain: ['localhost'],
+    logoUrl: '/logo.png',
+    avatarUrl: '/avatar.png',
+    tenantId: uuidv4(),
+    defaultWorkshopId: uuidv4(),
+    customPrimaryColor: '#4F46E5',
+    defaultModel: 'gpt-4',
+    isAcademyOnly: false
+  };
+}
+
+// API Endpoints
+app.get("/api/organizations/:orgId/users/me", (req, res) => {
+  const org = req.organization;
+  
   res.json({
-    id: 'user_123',
-    name: 'Test User',
-    email: 'test@meingpt.com',
-    organizationId: 'default_org',
-    // Add other required fields
-  });
-});
-
-// Add organization users endpoint
-app.get('/api/organizations/:orgId/users/me', (req, res) => {
-  res.json({
-    id: 'user_123',
-    name: 'Test User',
-    email: 'test@meingpt.com',
+    id: `user_${uuidv4().replace(/-/g, '').slice(0, 24)}`,
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@meingpt.com",
     organizationId: req.params.orgId,
-    // Add other required user fields
-    logoUrl: '',
-    avatarUrl: '',
-    customPrimaryColor: '#4F46E5'
+    // Organization-related fields
+    ...(() => {
+      const { id, ...rest } = org;
+      return rest;
+    })(),
+    // User-specific fields
+    isOrganizationAdmin: true,
+    tourCompleted: false,
+    roles: ["USER"],
+    jobDescription: "Developer",
+    onboarded: true,
+    isSuperUser: false,
+    company: "My Company",
+    // Add Zod-required defaults
+    imageUrl: org.avatarUrl,
+    primaryEmail: "john@meingpt.com",
+    isSuperUserOnly: false,
+    acceptedGuidelines: true
   });
 });
 
-// tRPC setup
+// tRPC configuration
 app.use(
-  '/trpc',
+  "/trpc",
   createExpressMiddleware({
     router: appRouter,
-    createContext: () => ({}),
+    createContext: ({ req }) => ({ organization: req.organization }),
   })
 );
 
-// Health check endpoint 🔧
+// Health check endpoint
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'ok',
-    version: '1.0.0',
-    services: ['auth', 'mock-database']
-  });
+  res.json({ status: 'ok', version: '1.0.0' });
 });
 
-// Frontend fallback 🔧
+// Frontend fallback
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../../dist/index.html'));
+  res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 
-
-app.use(
-  '/trpc',
-  createExpressMiddleware({
-    router: appRouter,
-    createContext: () => ({
-      // Mock context
-      organization: {
-        id: 'default_org',
-        name: 'Default Org'
-      }
-    }),
-  })
-);
-
+// Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });

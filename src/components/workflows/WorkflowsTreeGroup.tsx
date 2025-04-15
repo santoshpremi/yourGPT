@@ -52,7 +52,7 @@ export function WorkflowsTreeGroup({
             {...provided.droppableProps}
             className={twMerge(
               "rounded border border-transparent",
-              snapshot.isDraggingOver && "border-gray-600 bg-gray-300"
+              snapshot.isDraggingOver && "border-gray-600 bg-gray-300",
             )}
           >
             <Accordion

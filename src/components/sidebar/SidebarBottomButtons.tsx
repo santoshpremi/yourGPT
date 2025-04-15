@@ -65,7 +65,7 @@ export function SidebarBottomButtons({
     <div
       className={cn(
         "flex w-full flex-col gap-0 transition-all duration-300",
-        !isSidebarOpen && "gap-2"
+        !isSidebarOpen && "gap-2",
       )}
     >
       {bottomButtons.map((button) => {

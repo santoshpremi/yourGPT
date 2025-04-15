@@ -31,7 +31,7 @@ export function ErrorMessageText({
   ].includes(errorCode);
 
   const showColon = !["unknown_error", "document_generation_error"].includes(
-    errorCode
+    errorCode,
   );
 
   return (

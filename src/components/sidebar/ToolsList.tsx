@@ -60,7 +60,7 @@ export default function ToolsList({
             icon: <Wallpaper />,
             path: "/:organizationId/tools/imageFactory",
             enabled: Boolean(
-              productConfig?.imageGeneration && !!configuredImageModels?.length
+              productConfig?.imageGeneration && !!configuredImageModels?.length,
             ),
             testId: "imageGenerationSidebarButton",
           },
@@ -77,7 +77,7 @@ export default function ToolsList({
             enabled: Boolean(
               (productConfig?.meetingSummarizer ||
                 productConfig?.meetingTranscription) &&
-                enabledModels?.includes("gemini-1.5-pro" as LlmName)
+                enabledModels?.includes("gemini-1.5-pro" as LlmName),
             ),
           },
           {
@@ -103,7 +103,7 @@ export default function ToolsList({
       productConfig,
       documentTranslatorEnabled,
       isTechSupportEnabled,
-    ]
+    ],
   );
 
   const isActive = (tool: Tool) => {

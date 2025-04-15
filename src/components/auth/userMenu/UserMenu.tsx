@@ -26,7 +26,7 @@ export function UserMenu({
 
   const handleOpenChange = (
     e: React.SyntheticEvent | null,
-    isOpen: boolean
+    isOpen: boolean,
   ) => {
     const id = (e?.target as HTMLElement).id;
     if (id !== "languageSelector") {

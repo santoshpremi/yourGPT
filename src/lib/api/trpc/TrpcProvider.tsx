@@ -54,10 +54,11 @@ export function TrpcProvider({ children }: { children: React.ReactNode }) {
             },
           },
         },
-      })
+      }),
   );
 
-  const { organizationId: currentOrganizationId } = useParams("/:organizationId");
+  const { organizationId: currentOrganizationId } =
+    useParams("/:organizationId");
   const {
     i18n: { resolvedLanguage: currentLocale },
   } = useTranslation();

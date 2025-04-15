@@ -60,9 +60,9 @@ export const ApiExtendedSolutionAttemptSchema = ApiSolutionAttemptSchema.extend(
     SolutionAttemptEvaluation: z.array(
       SolutionAttemptEvaluationSchema.extend({
         challenge: z.any().nullable(),
-      })
+      }),
     ),
-  }
+  },
 );
 
 export type ApiExtendedSolutionAttempt = z.infer<

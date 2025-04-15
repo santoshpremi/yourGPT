@@ -50,7 +50,7 @@ export function RenameChatModal({
     } catch (e) {
       handleGenericError(
         e instanceof Error ? e : new Error("rename chat", { cause: e }),
-        "rename chat"
+        "rename chat",
       );
     }
   }

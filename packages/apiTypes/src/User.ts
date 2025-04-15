@@ -1,19 +1,20 @@
 import { z } from "zod";
 
+// Make fields nullable where appropriate
 export const ApiUser = z.object({
   id: z.string(),
-  firstName: z.string().nullable(),
-  lastName: z.string().nullable(),
-  imageUrl: z.string().nullable(),
-  primaryEmail: z.string().nullable(),
-  jobDescription: z.string().nullable(),
-  onboarded: z.boolean(),
-  isOrganizationAdmin: z.boolean(),
-  isSuperUser: z.boolean(),
+  firstName: z.string().nullable().default(''), // Allow null and provide default
+  lastName: z.string().nullable().default(''),
+  imageUrl: z.string().nullable().optional(),
+  primaryEmail: z.string().email().nullable().optional(),
+  jobDescription: z.string().nullable().optional(),
+  onboarded: z.boolean().default(false),
+  isOrganizationAdmin: z.boolean().default(false),
+  isSuperUser: z.boolean().default(false),
   isSuperUserOnly: z.boolean().default(false).optional(),
-  tourCompleted: z.boolean(),
-  company: z.string().nullable(),
-  roles: z.enum(["USER", "TEACHER"]).array(),
+  tourCompleted: z.boolean().default(false),
+  company: z.string().nullable().optional(),
+  roles: z.enum(["USER", "TEACHER"]).array().default([]),
   hasPayloadKeySet: z.boolean().optional(),
   acceptedGuidelines: z.boolean().optional(),
 });

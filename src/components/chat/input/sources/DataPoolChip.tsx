@@ -37,7 +37,7 @@ export function DataPoolChip({
 
   const numResults = Object.values(results.queries ?? {}).reduce(
     (acc, val) => acc + (val.length ?? 0),
-    0
+    0,
   );
 
   return (
@@ -113,7 +113,7 @@ export function DataPoolChip({
                       ))}
                     </List>
                   </>
-                )
+                ),
               )}
           </div>
         </ModalDialog>

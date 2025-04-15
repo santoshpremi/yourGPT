@@ -26,14 +26,14 @@ const locales = {
 };
 
 export function LanguageSelector(
-  props: ComponentProps<typeof Select> & { filter?: string[] | undefined }
+  props: ComponentProps<typeof Select> & { filter?: string[] | undefined },
 ) {
   const { i18n } = useTranslation();
 
   let localeEntries = Object.entries(locales);
   if (props.filter != undefined) {
     localeEntries = localeEntries.filter(([locale]) =>
-      props.filter!.includes(locale)
+      props.filter!.includes(locale),
     );
   }
 

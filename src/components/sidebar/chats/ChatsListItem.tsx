@@ -90,12 +90,12 @@ export function ChatsListItem({
               toast
                 .promise(
                   deleteChat({ chatId: chat.id }).then(() =>
-                    utils.chat.invalidate()
+                    utils.chat.invalidate(),
                   ),
                   {
                     success: t("chatDeleted"),
                     error: t("chatDeleteFailed"),
-                  }
+                  },
                 )
                 .catch((e) => console.error(e));
               if (!active) {

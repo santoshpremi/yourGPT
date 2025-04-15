@@ -1,5 +1,5 @@
-import z from 'zod';
-import type { env } from '../util/env';
+import z from "zod";
+import type { env } from "../util/env";
 
 /**
  * The margin to add to the price of text generation as a decimal factor.
@@ -7,26 +7,26 @@ import type { env } from '../util/env';
  */
 export const CREDIT_MARGIN_FACTOR = 1.2;
 
-export const DEFAULT_ORGANIZATION_MODEL = 'gpt-4o-mini';
+export const DEFAULT_ORGANIZATION_MODEL = "gpt-4o-mini";
 
 export const DEFAULT_ENABLED_MODELS: LlmName[] = [
-  'gpt-4o',
-  'gpt-4o-mini',
-  'sonar',
-  'claude-3-7-sonnet',
-  'gemini-1.5-pro',
+  "gpt-4o",
+  "gpt-4o-mini",
+  "sonar",
+  "claude-3-7-sonnet",
+  "gemini-1.5-pro",
 ];
 
 /**
  * The developer of LLMs. This IS NOT the same as the provider of the API. Will be used for Icon display and meta information display
  */
 export type AIProviders =
-  | 'OpenAI'
-  | 'Perplexity'
-  | 'Microsoft'
-  | 'Google'
-  | 'deingpt'
-  | 'Nebius';
+  | "OpenAI"
+  | "Perplexity"
+  | "Microsoft"
+  | "Google"
+  | "deingpt"
+  | "Nebius";
 
 /**
  * A function that returns the API configuration for a given environment
@@ -45,7 +45,7 @@ const LITE_LLM_API: AiApi = (e) => ({
 });
 
 const PERPLEXITY_API: AiApi = (e) => ({
-  endpoint: 'https://api.perplexity.ai',
+  endpoint: "https://api.perplexity.ai",
   apiKey: e.PERPLEXITY_API_KEY!,
 });
 
@@ -54,7 +54,7 @@ const GPT_4O_MINI_API: AiApi = (e) => {
     return {
       endpoint: e.AZURE_API_GPT4O_MINI_ENDPOINT,
       apiKey: e.AZURE_API_GPT4O_MINI_API_KEY,
-      apiVersion: '2024-07-01-preview',
+      apiVersion: "2024-07-01-preview",
     };
   } else {
     return LITE_LLM_API(e);
@@ -66,7 +66,7 @@ const GPT_4O_API: AiApi = (e) => {
     return {
       endpoint: e.AZURE_API_GPT4O_ENDPOINT,
       apiKey: e.AZURE_API_GPT4O_API_KEY,
-      apiVersion: '2024-07-01-preview',
+      apiVersion: "2024-07-01-preview",
     };
   } else {
     return LITE_LLM_API(e);
@@ -78,7 +78,7 @@ export type LlmMetaData = {
   provider: AIProviders;
   infoUrl: string;
   online?: boolean;
-  hostingLocation: 'EU' | 'US';
+  hostingLocation: "EU" | "US";
   quality: number;
   speed: number;
   allowChat: boolean;
@@ -92,7 +92,7 @@ export type LlmMetaData = {
   price: {
     inputTokens: number;
     outputTokens: number;
-    unit: 'perThousand' | 'perMillion';
+    unit: "perThousand" | "perMillion";
   };
   api: AiApi;
   additionalCompletionOptions?: Record<string, unknown>;
@@ -101,14 +101,14 @@ export type LlmMetaData = {
 
 const _LLM_META = {
   sonar: {
-    name: 'Perplexity Online',
-    infoUrl: 'https://www.perplexity.ai/hub/blog/introducing-pplx-online-llms',
-    hostingLocation: 'US',
+    name: "Perplexity Online",
+    infoUrl: "https://www.perplexity.ai/hub/blog/introducing-pplx-online-llms",
+    hostingLocation: "US",
     online: true,
-    provider: 'Perplexity',
+    provider: "Perplexity",
     quality: 3,
     speed: 4,
-    capabilities: ['Research', 'Search', 'Summarization'],
+    capabilities: ["Research", "Search", "Summarization"],
     contextWindow: 128_000,
     maxOutputTokens: 4096,
     allowChat: true,
@@ -118,22 +118,22 @@ const _LLM_META = {
       // This means an additional 10$ for 1 million tokens
       inputTokens: 11, // ($5.00 / 0.5M tokens) * 2 + ($1.00 / 1M tokens) = 11$ / 1M tokens
       outputTokens: 1, // $1.00 / 1M tokens
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     citationsSupported: true,
     api: PERPLEXITY_API,
   },
 
-  'sonar-deep-research': {
-    name: 'Perplexity Deep Research',
+  "sonar-deep-research": {
+    name: "Perplexity Deep Research",
     infoUrl:
-      'https://www.perplexity.ai/hub/blog/introducing-perplexity-deep-research',
-    hostingLocation: 'US',
+      "https://www.perplexity.ai/hub/blog/introducing-perplexity-deep-research",
+    hostingLocation: "US",
     online: true,
-    provider: 'Perplexity',
+    provider: "Perplexity",
     quality: 4,
     speed: 1,
-    capabilities: ['Research', 'Search', 'Summarization'], // TODO: double check
+    capabilities: ["Research", "Search", "Summarization"], // TODO: double check
     contextWindow: 128_000,
     maxOutputTokens: 4096, // TODO: double check
     allowChat: false,
@@ -143,7 +143,7 @@ const _LLM_META = {
       // This means an additional 10$ for 1 million tokens
       inputTokens: 12, // ($5.00 / 0.5M tokens) * 2 + ($2.00 / 1M tokens) = 12$ / 1M tokens
       outputTokens: 8, // $8.00 / 1M tokens
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     citationsSupported: true,
     api: PERPLEXITY_API,
@@ -152,37 +152,37 @@ const _LLM_META = {
   // OpenAI
   // Pricing: https://azure.microsoft.com/de-de/pricing/details/cognitive-services/openai-service/
   // (Region is sweden-central)
-  'gpt-4o-mini': {
-    name: 'GPT-4o Mini',
-    infoUrl: 'https://platform.openai.com/docs/models/gpt-4o-mini',
-    hostingLocation: 'EU',
-    provider: 'Microsoft',
+  "gpt-4o-mini": {
+    name: "GPT-4o Mini",
+    infoUrl: "https://platform.openai.com/docs/models/gpt-4o-mini",
+    hostingLocation: "EU",
+    provider: "Microsoft",
     quality: 3,
     speed: 4,
-    capabilities: ['Short Drafts', 'General Chat', 'Medium Complexity'],
+    capabilities: ["Short Drafts", "General Chat", "Medium Complexity"],
     contextWindow: 128_000,
     maxOutputTokens: 16384,
     allowChat: true,
     price: {
       inputTokens: 0.00014,
       outputTokens: 0.0006,
-      unit: 'perThousand',
+      unit: "perThousand",
     },
     api: GPT_4O_MINI_API,
   },
-  'gpt-4o': {
-    name: 'GPT-4o',
-    infoUrl: 'https://platform.openai.com/docs/models/gpt-4o',
-    hostingLocation: 'EU',
-    provider: 'Microsoft',
+  "gpt-4o": {
+    name: "GPT-4o",
+    infoUrl: "https://platform.openai.com/docs/models/gpt-4o",
+    hostingLocation: "EU",
+    provider: "Microsoft",
     quality: 5,
     speed: 2,
     capabilities: [
-      'Brainstorming',
-      'Strategies',
-      'Long Responses',
-      'Complex Reasoning',
-      'Technical Writing',
+      "Brainstorming",
+      "Strategies",
+      "Long Responses",
+      "Complex Reasoning",
+      "Technical Writing",
     ],
     contextWindow: 128_000,
     maxOutputTokens: 2048,
@@ -190,27 +190,27 @@ const _LLM_META = {
     price: {
       inputTokens: 2.46273,
       outputTokens: 9.8509,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: GPT_4O_API,
   },
 
   // OpenAI US
   // Pricing: https://openai.com/api/pricing/
-  'o1-us': {
-    name: 'o1',
-    infoUrl: 'https://openai.com/o1/',
-    hostingLocation: 'US',
-    provider: 'OpenAI',
+  "o1-us": {
+    name: "o1",
+    infoUrl: "https://openai.com/o1/",
+    hostingLocation: "US",
+    provider: "OpenAI",
     quality: 5,
     speed: 1,
-    capabilities: ['Logic', 'Math', 'Programming', 'Problem Solving'],
+    capabilities: ["Logic", "Math", "Programming", "Problem Solving"],
     contextWindow: 200_000,
     allowChat: true,
     price: {
       inputTokens: 15,
       outputTokens: 60,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
     additionalCompletionOptions: {
@@ -221,20 +221,20 @@ const _LLM_META = {
     maxOutputTokens: 100_000,
   },
 
-  'o3-mini': {
-    name: 'o3-mini',
-    infoUrl: 'https://openai.com/index/openai-o3-mini/',
-    hostingLocation: 'EU',
-    provider: 'Microsoft',
+  "o3-mini": {
+    name: "o3-mini",
+    infoUrl: "https://openai.com/index/openai-o3-mini/",
+    hostingLocation: "EU",
+    provider: "Microsoft",
     quality: 4,
     speed: 4,
-    capabilities: ['Programming', 'Data Analysis', 'Problem Solving', 'Math'],
+    capabilities: ["Programming", "Data Analysis", "Problem Solving", "Math"],
     contextWindow: 200_000,
     allowChat: true,
     price: {
       inputTokens: 1.1,
       outputTokens: 4.4,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
     additionalCompletionOptions: {
@@ -248,14 +248,14 @@ const _LLM_META = {
   // Anthropic
 
   // Model Card: https://console.cloud.google.com/vertex-ai/publishers/anthropic/model-garden/claude-3-7-sonnet
-  'claude-3-7-sonnet': {
-    name: 'Claude 3.7 Sonnet',
-    infoUrl: 'https://www.anthropic.com/claude/sonnet',
-    hostingLocation: 'EU',
-    provider: 'Google',
+  "claude-3-7-sonnet": {
+    name: "Claude 3.7 Sonnet",
+    infoUrl: "https://www.anthropic.com/claude/sonnet",
+    hostingLocation: "EU",
+    provider: "Google",
     quality: 5,
     speed: 4,
-    capabilities: ['Programming', 'Complex Queries', 'Technical Writing'],
+    capabilities: ["Programming", "Complex Queries", "Technical Writing"],
     contextWindow: 200_000,
     maxOutputTokens: 128_000,
     allowChat: true,
@@ -263,23 +263,23 @@ const _LLM_META = {
       // Pricing: https://cloud.google.com/vertex-ai/generative-ai/pricing#claude-models
       inputTokens: 3,
       outputTokens: 15,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
   },
 
-  'claude-3-7-sonnet-thinking': {
-    name: 'Claude 3.7 Sonnet Thinking',
-    infoUrl: 'https://www.anthropic.com/claude',
-    hostingLocation: 'EU',
-    provider: 'Google',
+  "claude-3-7-sonnet-thinking": {
+    name: "Claude 3.7 Sonnet Thinking",
+    infoUrl: "https://www.anthropic.com/claude",
+    hostingLocation: "EU",
+    provider: "Google",
     quality: 5,
     speed: 4,
     capabilities: [
-      'Reasoning',
-      'Programming',
-      'Complex Queries',
-      'Technical Writing',
+      "Reasoning",
+      "Programming",
+      "Complex Queries",
+      "Technical Writing",
     ],
     contextWindow: 200_000,
     maxOutputTokens: 128_000,
@@ -288,20 +288,20 @@ const _LLM_META = {
       // Pricing: https://cloud.google.com/vertex-ai/generative-ai/pricing#claude-models
       inputTokens: 3,
       outputTokens: 15,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
   },
 
   // Google
-  'gemini-1.5-pro': {
-    name: 'Gemini 1.5 Pro',
-    infoUrl: 'https://deepmind.google/technologies/gemini/pro/',
-    hostingLocation: 'EU',
-    provider: 'Google',
+  "gemini-1.5-pro": {
+    name: "Gemini 1.5 Pro",
+    infoUrl: "https://deepmind.google/technologies/gemini/pro/",
+    hostingLocation: "EU",
+    provider: "Google",
     quality: 5,
     speed: 4,
-    capabilities: ['Long inputs', 'Documents', 'Complex Queries'],
+    capabilities: ["Long inputs", "Documents", "Complex Queries"],
     contextWindow: 2_000_000,
     // todo: validate
     maxOutputTokens: 16384,
@@ -313,22 +313,22 @@ const _LLM_META = {
       // - Prices differ depending on context window size, so we simply use the average token price
       inputTokens: 1.68,
       outputTokens: 6.73,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
   },
-  'gemini-2.0-flash': {
-    name: 'Gemini 2.0 Flash',
-    infoUrl: 'https://deepmind.google/technologies/gemini/flash/',
-    hostingLocation: 'EU',
-    provider: 'Google',
+  "gemini-2.0-flash": {
+    name: "Gemini 2.0 Flash",
+    infoUrl: "https://deepmind.google/technologies/gemini/flash/",
+    hostingLocation: "EU",
+    provider: "Google",
     quality: 4,
     speed: 5,
     capabilities: [
-      'Long inputs',
-      'Documents',
-      'Complex Queries',
-      'Programming',
+      "Long inputs",
+      "Documents",
+      "Complex Queries",
+      "Programming",
     ],
     contextWindow: 1_000_000,
     maxOutputTokens: 8192,
@@ -341,18 +341,18 @@ const _LLM_META = {
       // - Prices differ depending on context window size, so we simply use the average token price
       inputTokens: ((0.1430475 + 0.1430475) / 2) * 4, // SKUs: 2AF0-41D8-C5F1, 1127-99B9-1860
       outputTokens: ((0.57219 + 0.57219) / 2) * 4, // SKUs: AFFC-D3FD-B2FC, DFB0-8442-43A8
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
   },
 
   // Nebius models
-  'llama-3.3-fast': {
-    name: 'Llama 3.3',
+  "llama-3.3-fast": {
+    name: "Llama 3.3",
     infoUrl:
-      'https://www.llama.com/docs/model-cards-and-prompt-formats/llama3_3',
-    hostingLocation: 'EU',
-    provider: 'Nebius',
+      "https://www.llama.com/docs/model-cards-and-prompt-formats/llama3_3",
+    hostingLocation: "EU",
+    provider: "Nebius",
     quality: 4,
     speed: 5,
     capabilities: [],
@@ -363,15 +363,15 @@ const _LLM_META = {
       // See https://studio.nebius.ai/
       inputTokens: 0.25,
       outputTokens: 0.75,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
   },
-  'deepseek-v3': {
-    name: 'DeepSeek-V3',
-    infoUrl: 'https://huggingface.co/deepseek-ai/DeepSeek-V3',
-    hostingLocation: 'EU',
-    provider: 'Nebius',
+  "deepseek-v3": {
+    name: "DeepSeek-V3",
+    infoUrl: "https://huggingface.co/deepseek-ai/DeepSeek-V3",
+    hostingLocation: "EU",
+    provider: "Nebius",
     quality: 4,
     speed: 3,
     capabilities: [],
@@ -382,15 +382,15 @@ const _LLM_META = {
       // See https://studio.nebius.ai/
       inputTokens: 0.5,
       outputTokens: 1.5,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
   },
-  'deepseek-r1': {
-    name: 'DeepSeek-R1',
-    infoUrl: 'https://huggingface.co/deepseek-ai/DeepSeek-R1',
-    hostingLocation: 'EU',
-    provider: 'Nebius',
+  "deepseek-r1": {
+    name: "DeepSeek-R1",
+    infoUrl: "https://huggingface.co/deepseek-ai/DeepSeek-R1",
+    hostingLocation: "EU",
+    provider: "Nebius",
     quality: 4,
     speed: 3,
     capabilities: [],
@@ -401,7 +401,7 @@ const _LLM_META = {
       // See https://studio.nebius.ai/
       inputTokens: 0.8,
       outputTokens: 2.4,
-      unit: 'perMillion',
+      unit: "perMillion",
     },
     api: LITE_LLM_API,
     includeInHealthCheck: false,
@@ -414,7 +414,7 @@ const _LLM_META = {
 export const LlmName = z
   .string()
   .refine((x) => x in _LLM_META)
-  .catch('gpt-4o-mini' as const satisfies LlmName)
+  .catch("gpt-4o-mini" as const satisfies LlmName)
   .transform((x) => x as LlmName);
 
 /**

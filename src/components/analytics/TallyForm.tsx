@@ -48,7 +48,7 @@ export function TallyForm({
       // Fallback if window.Tally is not available
       document
         .querySelectorAll<HTMLIFrameElement>(
-          "iframe[data-tally-src]:not([src])"
+          "iframe[data-tally-src]:not([src])",
         )
         .forEach((iframeEl) => {
           iframeEl.src = iframeEl.dataset.tallySrc!;

@@ -14,7 +14,7 @@ export function ArtifactPreview({ id }: ArtifactPreviewProps) {
 
   const { data, isLoading } = trpc.artifact.getVersion.useQuery(
     { id: id! },
-    { enabled: !!id }
+    { enabled: !!id },
   );
 
   return (

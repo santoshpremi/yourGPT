@@ -256,7 +256,7 @@ function SourceCard({
               textAlign: center ? "center" : "left",
             }}
           >
-            {active && hover ? hoverText : (text ?? t("knowledgeBase.include"))}
+            {active && hover ? hoverText : text ?? t("knowledgeBase.include")}
           </Typography>
 
           {source && (

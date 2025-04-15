@@ -142,7 +142,7 @@ export function TextMessage({
       ([knowledgeCollectionId, queries]) => ({
         knowledgeCollectionId,
         queries,
-      })
+      }),
     );
     return combined;
   }
@@ -336,7 +336,7 @@ function AiMessageOptions({
           onClick={() => {
             copy(
               messageContentRef.current?.innerHTML ?? "",
-              messageContentRef.current?.innerText ?? ""
+              messageContentRef.current?.innerText ?? "",
             );
           }}
         >

@@ -2,10 +2,10 @@ import {
   CREDIT_MARGIN_FACTOR,
   LLM_META,
   type LlmMetaData,
-} from '../../ai/llmMeta';
-import type { CreditUsageOptions } from '../../credits/credits.service';
+} from "../../ai/llmMeta";
+import type { CreditUsageOptions } from "../../credits/credits.service";
 
-const CONVERSION_FACTORS: Record<LlmMetaData['price']['unit'], number> = {
+const CONVERSION_FACTORS: Record<LlmMetaData["price"]["unit"], number> = {
   perMillion: 1_000_000,
   perThousand: 1_000,
 };
@@ -16,7 +16,7 @@ export function calculateMessageCreditUsage({
   inputTokens,
   outputTokens,
   model,
-}: CreditUsageOptions['TEXT_GENERATION']) {
+}: CreditUsageOptions["TEXT_GENERATION"]) {
   const modelInfo = LLM_META[model];
 
   const costPerTokenConversionFactor = CONVERSION_FACTORS[modelInfo.price.unit];

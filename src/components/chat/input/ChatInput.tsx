@@ -75,7 +75,7 @@ export const ChatInput = React.forwardRef(
       chat,
       ...textAreaProps
     }: ChatInputProps,
-    ref: React.Ref<HTMLTextAreaElement>
+    ref: React.Ref<HTMLTextAreaElement>,
   ) => {
     const [ragMode, setRagMode] = useState<RagModeInput>({
       mode: chat?.ragMode ?? "OFF",
@@ -111,7 +111,7 @@ export const ChatInput = React.forwardRef(
     const setInput = setValue ?? _setInput;
 
     const selectedSource = sources.find(
-      ({ id }) => id === ragMode.customSourceId
+      ({ id }) => id === ragMode.customSourceId,
     );
     const attachedDocumentIds = attachedDocuments?.map((d) => d.id) ?? [];
     const hasAttachments =
@@ -178,7 +178,7 @@ export const ChatInput = React.forwardRef(
             customSourceId: newMode.customSourceId,
             ragMode: newMode.mode,
           },
-          { onError: () => setRagMode(prev) }
+          { onError: () => setRagMode(prev) },
         );
       }
     };
@@ -219,7 +219,7 @@ export const ChatInput = React.forwardRef(
           variants={{ padded: { marginTop: 140 }, normal: { marginTop: 0 } }}
           className={twMerge(
             "relative flex grow items-end justify-end space-x-4",
-            embedded && "gap"
+            embedded && "gap",
           )}
           id="messageInput"
         >
@@ -337,7 +337,7 @@ export const ChatInput = React.forwardRef(
                             key={id}
                             onRemove={() => {
                               setAttachedDocuments(
-                                attachedDocuments.filter((d) => d.id !== id)
+                                attachedDocuments.filter((d) => d.id !== id),
                               );
                             }}
                           />
@@ -395,7 +395,7 @@ export const ChatInput = React.forwardRef(
         </motion.div>
       </>
     );
-  }
+  },
 );
 
 ChatInput.displayName = "ChatInput";

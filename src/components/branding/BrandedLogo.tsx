@@ -51,7 +51,7 @@ export function BrandedLogo({
 export function CustomLogoWithFallback(
   props: ComponentProps<"img"> & {
     customSource: string | null;
-  }
+  },
 ) {
   const source = props.customSource || logo;
 

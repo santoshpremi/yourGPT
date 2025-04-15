@@ -38,7 +38,7 @@ export const useDownloadAsDoc = ({
           },
           {
             responseType: "blob",
-          }
+          },
         );
 
         const href = URL.createObjectURL(res.data);
@@ -54,7 +54,7 @@ export const useDownloadAsDoc = ({
         setIsLoading(false);
       }
     },
-    [markdown, sanitizedFilename, orgApi, setIsLoading, templateId, t]
+    [markdown, sanitizedFilename, orgApi, setIsLoading, templateId, t],
   );
 
   return { downloadDocument, isLoading };

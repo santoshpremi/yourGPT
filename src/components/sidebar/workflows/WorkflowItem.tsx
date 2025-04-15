@@ -37,7 +37,7 @@ export function WorkflowItem({
       ? {
           departmentId: workflow?.departmentId,
         }
-      : skipToken
+      : skipToken,
   );
 
   const { mutateAsync: deleteWorkflow } = trpc.workflows.delete.useMutation();
@@ -83,7 +83,7 @@ export function WorkflowItem({
 
   const onInit = async (
     values: Record<string, string>,
-    attachmentIds: string[]
+    attachmentIds: string[],
   ) => {
     setModalOpen(false);
 
@@ -130,7 +130,7 @@ export function WorkflowItem({
             content = replaceAll(
               content,
               `{{${input.key}}}`,
-              values[input.key]
+              values[input.key],
             );
           }
           enqueueMessage({

@@ -33,6 +33,6 @@ export const phaseLink: TRPCLink<AppRouter> = () => {
         complete() {
           observer.complete();
         },
-      })
+      }),
     );
 };

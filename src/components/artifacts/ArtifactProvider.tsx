@@ -68,7 +68,7 @@ export const ArtifactProvider = ({
       const index = artifact?.versions.findIndex((v) => v.id === versionId);
       setVersionIndex(index ?? -1);
     },
-    [artifact, setVersionIndex]
+    [artifact, setVersionIndex],
   );
 
   const hide = useCallback(() => {
@@ -95,7 +95,7 @@ export const ArtifactProvider = ({
       });
       setVersionIndex(artifact?.versions.length ?? 0);
     },
-    [setArtifact, artifact]
+    [setArtifact, artifact],
   );
 
   const updateVersion = useCallback(
@@ -105,12 +105,12 @@ export const ArtifactProvider = ({
         return {
           ...prev,
           versions: prev.versions.map((v) =>
-            v.id === versionId ? { ...v, content } : v
+            v.id === versionId ? { ...v, content } : v,
           ),
         };
       });
     },
-    [setArtifact]
+    [setArtifact],
   );
 
   const createNewVersion = useCallback(
@@ -164,7 +164,7 @@ export const ArtifactProvider = ({
       createVersion,
       addVersion,
       updateVersion,
-    ]
+    ],
   );
 
   const value: ArtifactProviderMethods = useMemo(
@@ -177,7 +177,7 @@ export const ArtifactProvider = ({
       hide,
       showArtifact: show,
     }),
-    [visible, artifact, versionIndex, isLoading, createNewVersion, hide, show]
+    [visible, artifact, versionIndex, isLoading, createNewVersion, hide, show],
   );
 
   return (

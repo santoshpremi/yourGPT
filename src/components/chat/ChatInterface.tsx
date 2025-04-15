@@ -4,7 +4,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { twMerge } from "tailwind-merge";
 import { LLM_META } from "../../../backend/src/ai/llmMeta";
 
-
 import type { ModelOverride } from "../../../backend/src/api/chat/chatTypes.ts";
 import type {
   Message,
@@ -26,13 +25,9 @@ import { ChatInput } from "./input/ChatInput";
 import { ChatNotFound } from "./ChatNotFound";
 import { SmartIterations } from "./input/SmartIterations";
 import { ChatSettingsMenu } from "./input/ChatSettingsMenu";
-import {
-  ArtifactProvider,
-  useArtifact,
-} from "../artifacts/ArtifactProvider";
+import { ArtifactProvider, useArtifact } from "../artifacts/ArtifactProvider";
 import { ChatItem } from "./messages/ChatItem";
 import { type DocumentOutputFormat } from "../../../backend/src/document/documentTypes";
-
 
 export { ErrorDisplay as Catch } from "../util/ErrorDisplay";
 
@@ -54,7 +49,7 @@ interface ChatInterfaceProps {
   }) => void;
   onMessageHistoryChange?: (
     messages: Message[],
-    type: "prompt" | "response"
+    type: "prompt" | "response",
   ) => void;
   readonly?: boolean;
   customSystemPromptSuffix?: string;
@@ -120,7 +115,7 @@ function Interface({
   const clearMessageQueue = useQueuedMessagesStore((s) => s.clear);
   const queuedMessages = useQueuedMessagesStore((s) => s.queuedMessages);
   const shiftQueuedMessages = useQueuedMessagesStore(
-    (s) => s.shiftQueuedMessage
+    (s) => s.shiftQueuedMessage,
   );
 
   // Mutations
@@ -155,7 +150,7 @@ function Interface({
           silentError: true,
         },
       },
-    }
+    },
   );
   const { data: apiMessages } = trpc.message.getMessagesForChat.useQuery(
     {
@@ -167,7 +162,7 @@ function Interface({
           silentError: true,
         },
       },
-    }
+    },
   );
 
   const chatNotFound =
@@ -187,7 +182,7 @@ function Interface({
       completedApiMessages,
       completedApiMessages[completedApiMessages.length - 1]?.fromAi
         ? "response"
-        : "prompt"
+        : "prompt",
     );
   }, [apiMessages, onMessageHistoryChange]);
 
@@ -202,7 +197,7 @@ function Interface({
 
   const setModelOverride = async (
     model: string | null,
-    quiet: boolean = false
+    quiet: boolean = false,
   ) => {
     if (quiet) {
       await quietModelOverride({
@@ -371,8 +366,8 @@ function Interface({
                     generationModel: chunk.generationModel,
                     id: chunk.aiMessageId,
                   }
-                : m
-            )
+                : m,
+            ),
           );
           continue;
         }
@@ -394,8 +389,8 @@ function Interface({
                   content: fullResponse,
                   citations: chunk.citations,
                 }
-              : m
-          )
+              : m,
+          ),
         );
       }
       // if the user cancelled, we don't need to sync the messages since that already happened
@@ -422,7 +417,7 @@ function Interface({
       i18n.language,
       apiMessages,
       customSystemPromptSuffix,
-    ]
+    ],
   );
 
   const regenerateMessage = useCallback(
@@ -441,7 +436,7 @@ function Interface({
             messages: apiMessages,
             aiMessageId,
           },
-          true
+          true,
         );
       }
 
@@ -461,7 +456,7 @@ function Interface({
       chatId,
       enqueueMessage,
       cancelMessageGeneration,
-    ]
+    ],
   );
 
   const editMessage = useCallback(
@@ -488,7 +483,7 @@ function Interface({
               messages: updatedMessages,
               oldMessageId,
             },
-            true
+            true,
           );
         }
         oldMessageId = updatedOldMessage.id;
@@ -508,7 +503,7 @@ function Interface({
       apiMessages,
       enqueueMessage,
       cancelMessageGeneration,
-    ]
+    ],
   );
 
   const updateTitle = async () => {
@@ -577,9 +572,9 @@ function Interface({
         : []
       ).sort(
         (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
       ),
-    [apiMessages, tempMessages]
+    [apiMessages, tempMessages],
   );
 
   useEffect(() => {
@@ -637,7 +632,7 @@ function Interface({
       <div
         className={twMerge(
           "flex flex-grow flex-col justify-between overflow-y-auto overscroll-y-contain",
-          visible && "no-scrollbar"
+          visible && "no-scrollbar",
         )}
         ref={chatContainerRef}
       >
@@ -666,14 +661,14 @@ function Interface({
         <div
           className={twMerge(
             "relative z-10 flex w-full flex-col items-stretch justify-center bg-[#F0F4F8] px-10 pb-8 pt-0",
-            embedded && "bg-transparent p-0"
+            embedded && "bg-transparent p-0",
           )}
         >
           {/* The fade effect between chat and input */}
           <div
             className={twMerge(
               "absolute top-0 h-8 w-full -translate-y-[100%] bg-gradient-to-t from-[#F0F4F8] to-transparent",
-              embedded && "from-white"
+              embedded && "from-white",
             )}
           />
           {showSmartIterations && (

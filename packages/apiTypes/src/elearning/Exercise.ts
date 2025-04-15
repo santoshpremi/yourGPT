@@ -37,9 +37,9 @@ export const ApiExerciseWithSolutionAttemptsSchema = ApiExerciseSchema.extend({
           passed: z.boolean(),
           title: z.string(),
           prompt: z.string(),
-        })
+        }),
       ),
-    })
+    }),
   ),
 });
 

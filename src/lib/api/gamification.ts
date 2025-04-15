@@ -1,5 +1,11 @@
-import type { ApiCreateCompletedCourse, ApiXP } from "../../../packages/apiTypes/src/CompletedCourse";
-import type { calcLevelProgress, normalizeCurrentProgress } from "../../../packages/apiTypes/src/academy/calcLevelProgress";
+import type {
+  ApiCreateCompletedCourse,
+  ApiXP,
+} from "../../../packages/apiTypes/src/CompletedCourse";
+import type {
+  calcLevelProgress,
+  normalizeCurrentProgress,
+} from "../../../packages/apiTypes/src/academy/calcLevelProgress";
 
 import { useRootApi, useRootSchemaResource, useRootSWR } from "../hooks/useApi";
 
@@ -12,8 +18,6 @@ export type UserXP = {
   isNewLevel: boolean;
   normalizedProgressBefore: number;
 };
-
-
 
 export type FinishCourseResponse = {
   data: {
@@ -53,11 +57,11 @@ export function calcUserXP(xp: number, awardedXP: number) {
   const isNewLevel = userLevelBefore.currentLevel < userLevel.currentLevel;
   const normalized = normalizeCurrentProgress(
     userLevel.currentLevelProgress,
-    userLevel.currentLevel
+    userLevel.currentLevel,
   );
   let normalizedBefore = normalizeCurrentProgress(
     userLevelBefore.currentLevelProgress,
-    userLevelBefore.currentLevel
+    userLevelBefore.currentLevel,
   );
   if (normalizedBefore >= normalized) {
     normalizedBefore = 0;

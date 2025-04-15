@@ -17,7 +17,7 @@ export default function ArtifactTextEditor({
   onScroll,
 }: ArtifactTextEditor) {
   const [highlightData, setHighlightData] = useState<HighlightInfo | null>(
-    null
+    null,
   );
 
   const parentRef = useRef<HTMLDivElement>(null);

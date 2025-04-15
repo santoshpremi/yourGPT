@@ -18,7 +18,7 @@ const indexes = [
 ];
 
 function generatePalette(
-  color: string | undefined
+  color: string | undefined,
 ): Record<string, string> | undefined {
   if (!color) return undefined;
 
@@ -84,7 +84,7 @@ export const useTheme = () => {
       light: {
         palette: {
           primary: generatePalette(
-            organization.customPrimaryColor ?? "#cccccc"
+            organization.customPrimaryColor ?? "#cccccc",
           ),
           success: generatePalette("#198754"),
           warning: generatePalette("#FFC107"),

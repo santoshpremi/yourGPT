@@ -7,20 +7,20 @@ let lastAppVersion: string | null = null;
 
 export async function fetchWithAppVersion(
   input: RequestInfo,
-  init?: RequestInit
+  init?: RequestInit,
 ): Promise<Response> {
   const headers = new Headers(init?.headers);
-  
+
   // Add mock version if missing
-  if (!headers.has('x-app-version')) {
-    headers.set('x-app-version', '1.0.0-mock');
+  if (!headers.has("x-app-version")) {
+    headers.set("x-app-version", "1.0.0-mock");
   }
 
   const res = await fetch(input, {
     ...init,
-    headers
+    headers,
   });
-  
+
   handleAppVersionHeader(res.headers.get("x-app-version"));
   return res;
 }
@@ -58,7 +58,7 @@ function handleAppVersionHeader(appVersion: string | null) {
         closeButton: false,
         closeOnClick: false,
         draggable: false,
-      }
+      },
     );
   }
 }

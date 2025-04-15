@@ -48,7 +48,7 @@ export function HelpCenterModal({
   const isContactEmpty = (obj) =>
     !obj || !Object.keys(obj).some((k) => k !== "departmentName" && obj[k]);
   const filteredContacts = contactInfo.filter(
-    (contact) => !isContactEmpty(contact)
+    (contact) => !isContactEmpty(contact),
   );
   return (
     <IntercomAppWrapper>

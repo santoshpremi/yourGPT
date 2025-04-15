@@ -54,7 +54,7 @@ export const XPBar = ({
             "academyLevels." +
               LEVEL_NAMES[
                 Math.min(userXPData.currentLevel - 1, LEVEL_NAMES.length - 1)
-              ]
+              ],
           )}
         </Typography>
       </div>

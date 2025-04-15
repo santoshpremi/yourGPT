@@ -20,5 +20,5 @@ export const ApiCreateCompletedCourse = ApiCompletedCourse.omit({
 export type ApiCreateCompletedCourse = z.infer<typeof ApiCreateCompletedCourse>;
 
 export const ApiXP = z.object({
-    xp: z.number(),
-  });
+  xp: z.number(),
+});

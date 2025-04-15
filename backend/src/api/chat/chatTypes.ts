@@ -1,7 +1,7 @@
-import { ApiDate } from '../../../../packages/apiTypes/src/Date';
-import z from 'zod';
-import type { LlmName } from '../../ai/llmMeta';
-import { LlmNames } from '../../ai/llmMeta';
+import { ApiDate } from "../../../../packages/apiTypes/src/Date";
+import z from "zod";
+import type { LlmName } from "../../ai/llmMeta";
+import { LlmNames } from "../../ai/llmMeta";
 
 /**
  * Enum for chat model override settings.
@@ -9,19 +9,19 @@ import { LlmNames } from '../../ai/llmMeta';
  * which allows the system to select the best model automatically.
  */
 export const ModelOverride = z
-  .enum(['automatic', ...LlmNames] as const)
-  .catch(() => 'gpt-4o-mini' as const satisfies LlmName);
+  .enum(["automatic", ...LlmNames] as const)
+  .catch(() => "gpt-4o-mini" as const satisfies LlmName);
 
-export const RagMode = z.enum(['OFF', 'AUTO', 'CUSTOM']);
+export const RagMode = z.enum(["OFF", "AUTO", "CUSTOM"]);
 export type RagMode = z.infer<typeof RagMode>;
 
 export const RagModeInput = z
   .object({
-    ragMode: RagMode.default('OFF'),
+    ragMode: RagMode.default("OFF"),
     customSourceId: z.string().optional(),
   })
   .refine(({ ragMode, customSourceId }) => {
-    return ragMode !== 'CUSTOM' || (ragMode === 'CUSTOM' && customSourceId);
+    return ragMode !== "CUSTOM" || (ragMode === "CUSTOM" && customSourceId);
   });
 
 export const Chat = z.object({
@@ -33,7 +33,7 @@ export const Chat = z.object({
   modelOverride: ModelOverride.nullable(),
   organizationId: z.string(),
   customSystemPromptSuffix: z.string().nullable(),
-  ragMode: RagMode.default('OFF'),
+  ragMode: RagMode.default("OFF"),
   customSourceId: z.string().nullable(),
   creditWarningAccepted: z.boolean(),
   artifactId: z.string().nullable(),

@@ -5,12 +5,12 @@ export const CompletionRequest = z.object({
     z.object({
       content: z.string(),
       role: z.enum(["user", "assistant", "system"]),
-    })
+    }),
   ),
   systemPrompt: z.optional(
     z.object({
       language: z.string(),
-    })
+    }),
   ),
   response: z.enum(["json_object", "text"]).default("text").optional(),
 });

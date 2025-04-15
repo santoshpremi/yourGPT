@@ -2,7 +2,7 @@ import { useTranslation } from "./i18n";
 
 export function maxStringLength<T extends string | undefined>(
   input: T,
-  length: number
+  length: number,
 ): T {
   if (!input) return input;
   if (input.length > length) {
@@ -126,7 +126,7 @@ export function splitByExtension(name: string) {
 
 export function getMonthName(
   monthNumber: number,
-  locale: string = "default"
+  locale: string = "default",
 ): string {
   const date = new Date();
   date.setMonth(monthNumber);

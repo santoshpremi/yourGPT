@@ -25,7 +25,7 @@ export function ChatsList({ isSidebarOpen }: { isSidebarOpen: boolean }) {
     },
     {
       refetchOnWindowFocus: false,
-    }
+    },
   );
 
   const isActive = (path: Path) => comparePath(pathname, path);

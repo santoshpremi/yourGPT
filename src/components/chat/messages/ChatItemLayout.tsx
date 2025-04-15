@@ -41,7 +41,7 @@ export function ChatItemLayout({
       className={twMerge(
         "mx-10 my-5 flex flex-row items-start gap-6",
         embedded && "mx-0 my-2 gap-2",
-        fromAi && "aiMessage"
+        fromAi && "aiMessage",
       )}
     >
       <div className="flex flex-row items-center justify-between">
@@ -53,7 +53,7 @@ export function ChatItemLayout({
         className={twMerge(
           "flex-grow basis-0 overflow-hidden",
           embedded && fromAi && "pr-10",
-          embedded && !fromAi && "pl-20"
+          embedded && !fromAi && "pl-20",
         )}
       >
         <Card
@@ -62,7 +62,7 @@ export function ChatItemLayout({
           color={cardColor}
           variant={cardVariant}
           className={twMerge(
-            "group flex flex-1 flex-col items-stretch overflow-x-auto"
+            "group flex flex-1 flex-col items-stretch overflow-x-auto",
           )}
         >
           {children}

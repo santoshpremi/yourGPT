@@ -173,7 +173,7 @@ export default function CreateWorkflowModal({
                     setWizardInput(
                       wizardTemplatePrompts[
                         Math.floor(Math.random() * wizardTemplatePrompts.length)
-                      ]
+                      ],
                     )
                   }
                 >

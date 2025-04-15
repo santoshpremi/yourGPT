@@ -76,7 +76,7 @@ export function SmartIterations({
       if (!entry) return;
 
       setIsSmall(
-        iterationOptions.length * buttonWidth > entry.contentRect.width - 40
+        iterationOptions.length * buttonWidth > entry.contentRect.width - 40,
       );
     });
 

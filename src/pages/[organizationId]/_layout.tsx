@@ -21,11 +21,11 @@ import { useLoggedInOnly } from "../../lib/hooks/useLoggedInOnly";
 import { useTheme } from "../../lib/hooks/useTheme";
 import { useNavigate, useParams } from "../../router";
 import usePersistentState from "../../lib/hooks/usePersistentState";
-import { OrganizationProvider } from '../../context/organization';
+import { OrganizationProvider } from "../../context/organization";
 export default function OrganizationLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = usePersistentState<boolean>(
     "sidebar-state",
-    true
+    true,
   );
 
   const isSmallScreen = useBreakingPoint("lg");
@@ -107,47 +107,46 @@ export default function OrganizationLayout() {
 
   return (
     <OrganizationProvider>
-
-    <CssVarsProvider theme={theme}>
-      <TrialModal />
-      <IntroTour />
-      <Plausible />
-      <GuidelinesModal
-        forceAccept
-        isOpen={!guidelinesAccepted}
-        onClose={acceptGuidelines}
-      />
-      <div className="border-red relative flex h-screen w-screen flex-row">
-        {me?.isSuperUserOnly && (
-          <>
-            <div className="pointer-events-none absolute right-1 top-0 z-50 p-2">
-              <Alert
-                variant="soft"
-                color="danger"
-                size="sm"
-                startDecorator={<Info />}
-              >
-                Super User View. You are not a member of this organization.
-              </Alert>
-            </div>
-            <div className="pointer-events-none fixed z-40 h-screen w-screen border-4 border-red-500" />
-          </>
-        )}
-        <Sidebar
-          isSidebarOpen={isSidebarOpen}
-          setIsSidebarOpen={setIsSidebarOpen}
+      <CssVarsProvider theme={theme}>
+        <TrialModal />
+        <IntroTour />
+        <Plausible />
+        <GuidelinesModal
+          forceAccept
+          isOpen={!guidelinesAccepted}
+          onClose={acceptGuidelines}
         />
-        <div className="relative h-full flex-1 overflow-y-auto">
-          <div className="absolute left-0 right-0 top-0 z-10 flex flex-col items-center gap-4 p-4">
-            {organization?.banners?.map((banner) => (
-              <Banner banner={banner} key={banner.id} />
-            ))}
+        <div className="border-red relative flex h-screen w-screen flex-row">
+          {me?.isSuperUserOnly && (
+            <>
+              <div className="pointer-events-none absolute right-1 top-0 z-50 p-2">
+                <Alert
+                  variant="soft"
+                  color="danger"
+                  size="sm"
+                  startDecorator={<Info />}
+                >
+                  Super User View. You are not a member of this organization.
+                </Alert>
+              </div>
+              <div className="pointer-events-none fixed z-40 h-screen w-screen border-4 border-red-500" />
+            </>
+          )}
+          <Sidebar
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
+          <div className="relative h-full flex-1 overflow-y-auto">
+            <div className="absolute left-0 right-0 top-0 z-10 flex flex-col items-center gap-4 p-4">
+              {organization?.banners?.map((banner) => (
+                <Banner banner={banner} key={banner.id} />
+              ))}
+            </div>
+            <Outlet />
           </div>
-          <Outlet />
         </div>
-      </div>
-    </CssVarsProvider>
-          <Outlet />
+      </CssVarsProvider>
+      <Outlet />
     </OrganizationProvider>
   );
 }

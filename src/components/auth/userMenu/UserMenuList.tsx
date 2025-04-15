@@ -72,7 +72,7 @@ export function UserMenuList({
           silentError: true,
         },
       },
-    }
+    },
   );
 
   const menuTitleStyle = "pl-3 pt-1.5 pb-0.5 tracking-wider !text-gray-500";
@@ -167,7 +167,7 @@ export function UserMenuList({
   ];
 
   const filteredMenuItems = menuItems.filter((group) =>
-    group.items.some((item: MenuItemInterface) => item.doesRender)
+    group.items.some((item: MenuItemInterface) => item.doesRender),
   );
 
   return (
@@ -215,7 +215,7 @@ export function UserMenuList({
                     )}
                   </div>
                 </MenuItem>
-              )
+              ),
           )}
         </div>
       ))}

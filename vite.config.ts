@@ -1,33 +1,40 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import { sentryVitePlugin } from "@sentry/vite-plugin";
-import tsconfigPaths from 'vite-tsconfig-paths';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   server: {
     proxy: {
-      '/api': {
-        target: 'http://localhost:8003', // Point to backend port
+      "/api": {
+        target: "http://localhost:8003",
         changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ""),
         ws: true,
-        secure: false,
       },
-      '/trpc': {
-        target: 'http://localhost:8003', // Remove separate trpc proxy
+      "/trpc": {
+        target: "http://localhost:8003",
         changeOrigin: true,
-        secure: false
+        rewrite: (path) => path.replace(/^\/trpc/, ""),
+      },
+    },
+  },
+  build: {
+    assetsInlineLimit: 4096, // 4KB threshold
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]'
       }
     }
   },
-    build: {
-    sourcemap: true, // Source map generation must be turned on
-  },
   plugins: [
-    // Put the Sentry vite plugin after all other plugins
-    sentryVitePlugin({
-      authToken: process.env.SENTRY_AUTH_TOKEN,
-      org: "no-7p",
-      project: "javascript-react-xf",
+    react({
+      jsxImportSource: "@emotion/react",
+      babel: {
+        plugins: ["@emotion/babel-plugin"],
+      },
+    }),
+    tsconfigPaths({
+      projects: ["tsconfig.json"],
     }),
   ],
 });

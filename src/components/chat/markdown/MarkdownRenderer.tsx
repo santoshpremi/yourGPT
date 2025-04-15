@@ -117,7 +117,7 @@ function _MarkdownRenderer({
     const startIdx = contentWithoutThoughtProcess.indexOf(markdownStart);
     const endIdx = contentWithoutThoughtProcess.indexOf(
       markdownEnd,
-      startIdx + markdownStart.length
+      startIdx + markdownStart.length,
     );
 
     if (startIdx !== -1) {
@@ -167,7 +167,7 @@ function _MarkdownRenderer({
           a: (aProps) => {
             const href = aProps.href || "";
             const isInternal = /^\/#/i.test(href);
-            const target = isInternal ? "_self" : (aProps.target ?? "_blank");
+            const target = isInternal ? "_self" : aProps.target ?? "_blank";
             return <a {...aProps} target={target} />;
           },
           pre: CodeBlock,

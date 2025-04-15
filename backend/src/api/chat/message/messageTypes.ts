@@ -1,12 +1,12 @@
-import { ApiDate } from '../../../../../packages/apiTypes/src/Date';
-import z from 'zod';
-import { LlmName } from '../../../ai/llmMeta';
-import { ModelOverride } from '../chatTypes';
-import { DocumentOutputFormat } from '../../../document/documentTypes';
+import { ApiDate } from "../../../../../packages/apiTypes/src/Date";
+import z from "zod";
+import { LlmName } from "../../../ai/llmMeta";
+import { ModelOverride } from "../chatTypes";
+import { DocumentOutputFormat } from "../../../document/documentTypes";
 
 export const CreateMessageInput = z.object({
   content: z.string().min(1),
-  language: z.string().default('en'),
+  language: z.string().default("en"),
   attachmentIds: z.array(z.string()).default([]),
   customSystemPromptSuffix: z.string().optional(),
   temperature: z.number().optional(),
@@ -56,7 +56,7 @@ export const Message = z.object({
   responseCompleted: z.boolean().nullable(),
   authorId: z.string().nullable(),
   chatId: z.string(),
-  generationModel: LlmName.default('gpt-4o-mini' satisfies LlmName).nullable(),
+  generationModel: LlmName.default("gpt-4o-mini" satisfies LlmName).nullable(),
   attachmentIds: z.array(z.string()).default([]),
   ragSources: z.array(RagSource).default([]),
   citations: z.array(z.string()).default([]),
@@ -71,11 +71,11 @@ export type Message = z.infer<typeof Message>;
 
 export enum MessageGenerationStep {
   /** The RAG agent is generating queries and deciding which knowledgeCollections to search in*/
-  FormulatingQueries = 'formulatingQueries',
+  FormulatingQueries = "formulatingQueries",
   /** The RAG system is queried for information */
-  SearchingForInformation = 'searchingForInformation',
+  SearchingForInformation = "searchingForInformation",
   /** The AI is generating the final response */
-  GeneratingResponse = 'generatingResponse',
+  GeneratingResponse = "generatingResponse",
 }
 
 export type MessageGenerationProgress = {

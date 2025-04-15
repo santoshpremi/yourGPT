@@ -47,7 +47,7 @@ export function GuidelinesModal({
               new Date(guidelinesLastUpdate).toLocaleDateString(i18n.language) +
               " " +
               (new Date(guidelinesLastUpdate).toLocaleTimeString(
-                i18n.language
+                i18n.language,
               ) ?? "")
             }
           />

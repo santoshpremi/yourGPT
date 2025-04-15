@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": "./", // Set rootDir to the project root
+    "rootDir": ".", // Set rootDir to the project root
     "resolveJsonModule": true,
     "jsx": "react-jsx",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
@@ -26,6 +26,6 @@
       "@types/*": ["./packages/apiTypes/src/*"]
     }
   },
-  "include": ["src/**/*", "backend/src/**/*"], // Include both src and backend/src
+  "include": ["src/**/*", "backend/src/**/*", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

@@ -59,7 +59,7 @@ type MultiModelSelectorProps = {
 };
 
 function useAvailableModelsForChat(
-  allModels: boolean = false
+  allModels: boolean = false,
 ): ModelOverride[] {
   const { data: availableModels } = trpc.modelConfig.getEnabled.useQuery();
   // this approach filters the meta so the order is preserved
@@ -67,7 +67,7 @@ function useAvailableModelsForChat(
     .filter(
       ([modelName, meta]) =>
         (allModels || meta.allowChat) &&
-        availableModels?.includes(modelName as LlmName)
+        availableModels?.includes(modelName as LlmName),
     )
     .map(([key]) => key) ?? []) as ModelOverride[];
   return ["automatic", ...models];
@@ -131,7 +131,7 @@ export function ModelSelectorModal({
                     selectedModel === option ||
                     ((!selectedModel ||
                       !options.some(
-                        (innerOption) => innerOption === selectedModel
+                        (innerOption) => innerOption === selectedModel,
                       )) &&
                       defaultModel === option)
                   }
@@ -294,7 +294,7 @@ export function ModelCard({
               }}
             >
               {Array.from({ length: 5 }, (_, i) =>
-                block(meta == null || i < meta.quality)
+                block(meta == null || i < meta.quality),
               )}
             </Stack>
             <Stack
@@ -305,7 +305,7 @@ export function ModelCard({
               }}
             >
               {Array.from({ length: 5 }, (_, i) =>
-                block(meta == null || i < meta.speed)
+                block(meta == null || i < meta.speed),
               )}
             </Stack>
           </Stack>
