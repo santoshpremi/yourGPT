@@ -1,3 +1,4 @@
+// src/lib/api/guidelines.ts
 import { trpc } from "./trpc/trpc";
 
 export const useGuidelines = () => {

@@ -27,7 +27,8 @@ export async function fetchWithAppVersion(
 
 function handleAppVersionHeader(appVersion: string | null) {
   if (!appVersion) {
-    console.warn("No app version header found");
+    //console.warn("No app version header found");
+    console.debug("App version header not found but continuing");
     return;
   }
 

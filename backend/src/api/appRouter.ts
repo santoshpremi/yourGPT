@@ -5,8 +5,10 @@ import {
   ApiOrganization,
   ApiPatchOrganization,
 } from "../../../packages/apiTypes/src/Organization";
+import { checkTrialPhase } from '@credits/phaseUsage';
 
 const t = initTRPC.create();
+export const publicProcedure = t.procedure;
 
 export const appRouter = t.router({
   organization: t.router({
@@ -26,6 +28,9 @@ export const appRouter = t.router({
         id: "org_cm8yflh26064xmw01zbalts9c",
         isAcademyOnly: false,
       })),
+  }),
+    trial: t.router({
+    check: publicProcedure.query(() => checkTrialPhase())
   }),
 
   artifact: t.router({

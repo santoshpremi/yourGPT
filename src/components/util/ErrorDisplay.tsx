@@ -1,6 +1,6 @@
+// src/components/util/ErrorDisplay.tsx
 import { useTranslation } from "../../lib/i18n";
 import { useModals, useNavigate } from "../../router";
-import { captureException } from "@sentry/react";
 import { Button, Card, Typography } from "@mui/joy";
 import { ArrowBack, InsertComment, Refresh } from "@mui/icons-material";
 import { TrpcProvider } from "../../lib/api/trpc/TrpcProvider";
@@ -12,10 +12,6 @@ export function ErrorDisplay() {
   const navigate = useNavigate();
   const routeError = useRouteError() as string | undefined;
   const modals = useModals();
-
-  if (routeError) {
-    captureException(new Error(routeError));
-  }
 
   const handleRetry = () => {
     window.location.reload();

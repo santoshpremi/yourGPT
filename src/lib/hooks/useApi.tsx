@@ -29,15 +29,17 @@ export function useOrganizationApi(options?: UseApiOptions) {
     options,
   );
 }
+
+
 // Update useOrganizationApi
 
-function useApiWithBasePath(basePath: string, options?: UseApiOptions) {
+export function useApiWithBasePath(basePath: string, options?: UseApiOptions) {
   const { t } = useTranslation();
   const setLoggedIn = useAuthStore((state) => state.setLoggedIn);
 
   return useMemo(() => {
     const api = axios.create({
-      baseURL: basePath,
+      baseURL: `${import.meta.env.VITE_API_BASE_URL}${basePath}`, // Add this
       withCredentials: true,
       validateStatus: (status) => status < 400,
     });
@@ -91,16 +93,21 @@ export function useOrganizationSchemaResource<T extends z.ZodSchema>(
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function useOrganizationResource<T = any>(
   path: string | null,
-  options?: Partial<SWRConfiguration & { auth: boolean }>,
+  options?: Partial<SWRConfiguration & { auth: boolean }>
 ): T | null | undefined {
   const swr = useOrganizationSWR(path, options);
 
-  if (swr.isLoading) return undefined;
-  if (swr.error) return undefined;
-  if (!swr.data) return null;
+  if (swr.error) {
+    console.error("API Error:", swr.error);
+    return null;
+  }
+  
+  if (typeof swr.data === 'string') {
+    console.error("Unexpected string response from API");
+    return null;
+  }
 
   return swr.data;
 }
@@ -139,18 +146,19 @@ export function useRootResource<T = any>(
 // Update useOrganizationSWR
 export function useOrganizationSWR(
   path: string | null,
-  options?: useApiSWROptions,
+  options?: useApiSWROptions
 ) {
   const params = useParams("/:organizationId");
   const organizationId = params?.organizationId;
+  const fetcher = useOrganizationFetcher(); // Valid hook call
 
   return useSWR(
     organizationId && path ? `${path}?org=${organizationId}` : null,
-    useOrganizationFetcher(),
+    fetcher,
     {
       ...options,
       enabled: !!organizationId && !!path,
-    },
+    }
   );
 }
 
@@ -167,8 +175,13 @@ function useFetcherFromApi(api: ReturnType<typeof useOrganizationApi>) {
 }
 
 export function useOrganizationFetcher() {
-  return useFetcherFromApi(useOrganizationApi());
+  const api = useOrganizationApi(); // Valid hook call inside custom hook
+  return async (url: string) => {
+    const response = await api.get(url);
+    return response.data;
+  };
 }
+
 
 export function useRootFetcher() {
   return useFetcherFromApi(useRootApi());

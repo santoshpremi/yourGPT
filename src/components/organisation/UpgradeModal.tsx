@@ -1,9 +1,10 @@
-import type { PhaseUsageResponse } from "../../../../backend/src/util/credits/phaseUsage";
+import type { PhaseUsageResponse } from "@credits/phaseUsage";
 import { Trans, useTranslation } from "react-i18next";
 import { useMe } from "../../lib/api/user";
 import { trpc } from "../../lib/api/trpc/trpc";
 import { Card, Divider, Modal, ModalDialog, Stack, Typography } from "@mui/joy";
 import { useTrialStore } from "../../lib/context/trialModalStore";
+const receiver = "sales@deingpt.com";
 
 interface UpgradeModalProps {
   status: PhaseUsageResponse;
@@ -65,9 +66,9 @@ function UpgradeModal({ status }: UpgradeModalProps) {
           }}
         >
           <Typography level="title-lg">{title}</Typography>
-          <Typography level="body-md" color="neutral">
-            {description}
-          </Typography>
+          <Typography level="body-lg" fontWeight="700" sx={{ mt: -1.5 }}>
+              <a href={`mailto:${receiver}`}>{receiver}</a>
+           </Typography>
 
           <Stack direction="row" flex={1} spacing={1} mt={2}>
             {metrics &&

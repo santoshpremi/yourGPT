@@ -8,7 +8,7 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist",
-    "rootDir": ".", // Set rootDir to the project root
+    "rootDir": ".",
     "resolveJsonModule": true,
     "jsx": "react-jsx",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
@@ -18,14 +18,21 @@
     "noEmit": true,
     "types": ["vite/client", "node"],
     "baseUrl": ".",
-
     "paths": {
       "@/*": ["./src/*"],
       "@backend/*": ["./backend/src/*"],
       "@api/*": ["./src/lib/api/*"],
-      "@types/*": ["./packages/apiTypes/src/*"]
+      "@types/*": ["./packages/apiTypes/src/*"],
+      // Add this new path mapping
+      "@credits/*": ["./backend/src/util/credits/*"]
     }
   },
-  "include": ["src/**/*", "backend/src/**/*", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "src/**/*",
+    "backend/src/**/*",
+    "packages/apiTypes/src/**/*",
+    "**/*.ts",
+    "**/*.tsx"
+  ],
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

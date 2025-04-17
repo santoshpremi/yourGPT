@@ -3,13 +3,15 @@ import react from "@vitejs/plugin-react";
 import tsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
+    optimizeDeps: {
+    exclude: ['lottie-web']
+  },
   server: {
     proxy: {
       "/api": {
         target: "http://localhost:8003",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
-        ws: true,
       },
       "/trpc": {
         target: "http://localhost:8003",
@@ -22,8 +24,12 @@ export default defineConfig({
     assetsInlineLimit: 4096, // 4KB threshold
     rollupOptions: {
       output: {
-        assetFileNames: 'assets/[name]-[hash][extname]'
-      }
+        assetFileNames: 'assets/[name]-[hash][extname]',
+       // chunkFileNames: 'chunks/[name]-[hash].js',
+       // entryFileNames: 'entries/[name]-[hash].js'
+      },
+     // external: ['lottie-web'],
+
     }
   },
   plugins: [

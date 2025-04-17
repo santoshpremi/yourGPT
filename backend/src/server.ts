@@ -46,6 +46,17 @@ const organizations = new Map<string, Organization>([
   ['default_org', createOrganization('default_org')]
 ]);
 
+app.use((req, res, next) => {
+  res.header('Content-Type', 'application/json');
+  next();
+});
+
+
+app.post('/api/trial/extend', (req, res) => {
+  // Add your trial extension logic here
+  res.json({ status: 'extended', months: 2 });
+});
+
 // Organization middleware
 app.use(['/api/organizations/:orgId', '/:organizationId'], 
   (req, res, next) => {
@@ -82,21 +93,23 @@ function createOrganization(orgId: string): Organization {
 }
 
 // API Endpoints
+// backend/src/server.ts
 app.get("/api/organizations/:orgId/users/me", (req, res) => {
   const org = req.organization;
   
+  // Return proper JSON structure
   res.json({
-    id: `user_${uuidv4().replace(/-/g, '').slice(0, 24)}`,
+    id: "user_123",
     firstName: "John",
     lastName: "Doe",
     email: "john@meingpt.com",
     organizationId: req.params.orgId,
-    // Organization-related fields
-    ...(() => {
-      const { id, ...rest } = org;
-      return rest;
-    })(),
-    // User-specific fields
+    logoUrl: org.logoUrl,
+    avatarUrl: org.avatarUrl,
+    tenantId: org.tenantId,
+    defaultWorkshopId: org.defaultWorkshopId,
+    customPrimaryColor: org.customPrimaryColor,
+    defaultModel: org.defaultModel,
     isOrganizationAdmin: true,
     tourCompleted: false,
     roles: ["USER"],
@@ -104,7 +117,7 @@ app.get("/api/organizations/:orgId/users/me", (req, res) => {
     onboarded: true,
     isSuperUser: false,
     company: "My Company",
-    // Add Zod-required defaults
+    // Add Zod-required fields
     imageUrl: org.avatarUrl,
     primaryEmail: "john@meingpt.com",
     isSuperUserOnly: false,
@@ -126,12 +139,19 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', version: '1.0.0' });
 });
 
-// Frontend fallback
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../dist/index.html'));
-});
+
 
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
+});
+
+// Handle API 404s properly
+app.use('/api/*', (req, res) => {
+  res.status(404).json({ error: "API endpoint not found" });
+});
+
+// Frontend fallback should come LAST
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });

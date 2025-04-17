@@ -1,12 +1,12 @@
 import type { HTMLProps } from "react";
-import type { ModelOverride } from "../../../backend/src/api/chat/chatTypes.ts";
-import deingptIcon from "../assets/logo.svg";
-import claudeIcon from "../assets/modelicons/claude.webp";
-import googleIcon from "../assets/modelicons/google.png";
+import type { ModelOverride } from "../../backend/src/api/chat/chatTypes.js";
+import deingptIcon from "../assets/logo_extended.svg";
+import claudeIcon from "../assets/modelicons/openai.png";
+import googleIcon from "../assets/modelicons/openai.png";
 import openaiIcon from "../assets/modelicons/openai.png";
-import perplexityIcon from "../assets/modelicons/perplexity.png";
-import nebiusIcon from "../assets/modelicons/nebius.png";
-import deepseekIcon from "../assets/modelicons/deepseek.png";
+import perplexityIcon from "../assets/modelicons/openai.png";
+import nebiusIcon from "../assets/modelicons/openai.png";
+import deepseekIcon from "../assets/modelicons/openai.png";
 
 export function ModelIcon({
   modelName,

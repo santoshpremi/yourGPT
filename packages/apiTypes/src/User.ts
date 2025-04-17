@@ -3,8 +3,10 @@ import { z } from "zod";
 // Make fields nullable where appropriate
 export const ApiUser = z.object({
   id: z.string(),
-  firstName: z.string().nullable().default(''), // Allow null and provide default
-  lastName: z.string().nullable().default(''),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  organizationId: z.string(),
   imageUrl: z.string().nullable().optional(),
   primaryEmail: z.string().email().nullable().optional(),
   jobDescription: z.string().nullable().optional(),

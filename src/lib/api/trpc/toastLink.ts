@@ -1,8 +1,8 @@
+// src/lib/api/trpc/toastLink.ts
 import type { TRPCLink } from "@trpc/client";
 import type { AppRouter } from "../../../../backend/src/api/appRouter";
 import { observable } from "@trpc/server/observable";
 import { toast } from "react-toastify";
-import { captureException } from "@sentry/react";
 import { useAuthStore } from "../../context/authStore";
 import { t } from "i18next";
 
@@ -16,10 +16,9 @@ export const toastLink: TRPCLink<AppRouter> = () => {
           }
           observer.next(value);
         },
-
         error(err) {
           if (op.context.silentError) {
-            observer.error(err);
+            observer.error(err);  
             return;
           }
 
@@ -28,13 +27,6 @@ export const toastLink: TRPCLink<AppRouter> = () => {
               useAuthStore.getState().setLoggedIn(false);
               break;
             default:
-              if (!err.data?.isReported) {
-                captureException(err, {
-                  extra: {
-                    op,
-                  },
-                });
-              }
               console.error("TRPC error during", op);
               console.error("error code:", err.data?.code);
               console.error(err);

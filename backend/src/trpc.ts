@@ -6,7 +6,8 @@ import {
   ApiPatchOrganization,
 } from "../../packages/apiTypes/src/Organization.js";
 
-const t = initTRPC.create();
+export const t = initTRPC.create();
+
 
 // Modify the mock organization data to match schema requirements
 const mockOrganization = ApiOrganization.parse({
@@ -38,6 +39,7 @@ export const appRouter = t.router({
       })),
     health: t.procedure.query(() => ({ status: "ok" })),
   }),
+  // Add trial router
 
   artifact: t.router({
     getVersion: t.procedure

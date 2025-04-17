@@ -1,3 +1,4 @@
+// src/lib/api/user.ts
 import {
   ApiUpdatePayloadApiKey,
   ApiOrganizationUser,
@@ -50,7 +51,7 @@ export function useMe() {
   const params = useParams("/:organizationId");
   const mutate = useOrganizationSWR("/users/me").mutate;
   const { data, error } = useOrganizationSWR("/users/me");
-  
+
   useEffect(() => {
     if (lastOrganizationId === null) {
       lastOrganizationId = params.organizationId;
@@ -61,9 +62,20 @@ export function useMe() {
     mutate();
   }, [params.organizationId, mutate]);
 
-  if (error) return null;
+  // Add response validation
+  if (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+
   if (!data) return undefined;
-  
+
+  // Handle unexpected response format
+  if (typeof data === "string") {
+    console.error("Unexpected string response from API:", data);
+    return null;
+  }
+
   try {
     return ApiUser.parse(data);
   } catch (error) {

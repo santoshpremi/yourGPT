@@ -1,6 +1,6 @@
+// src/lib/errorHandling.tsx
 import type { AxiosError } from "axios";
 import { toast } from "react-toastify";
-import * as Sentry from "@sentry/react";
 import { ErrorToastContent } from "../components/util/ErrorToastContent";
 
 export let shownNoInternetError = false;
@@ -10,36 +10,19 @@ type Extra = {
 };
 
 export function handleGenericError(
-  error: Error,
-  customMessage: string | undefined,
-  extra?: Extra,
-  propagate: boolean = false,
-) {
-  console.error("An error occurred:");
-  console.trace("Error Stack:");
-  console.error(error);
-
-  const customId = generateClientErrorCode();
-  Sentry.captureException(error, {
-    extra: {
-      ...extra,
-      customId,
-    },
-    tags: {
-      customId,
-    },
-  });
-
-  showErrorToast(customId, customMessage);
-
-  if (propagate) {
+error: Error, customMessage: string | undefined, p0: { source: string; }, propagate: boolean = false,
+) { 
+  console.error("Error:", error);
+  showErrorToast(customMessage);
+  if(propagate) {
     throw error;
   }
 }
 
+
 export function genericErrorHandlerFactory(customMessage: string | undefined) {
   return (error: Error) => {
-    handleGenericError(error, customMessage);
+    handleGenericError(error, customMessage, { source: "unknown" });
   };
 }
 
@@ -66,64 +49,18 @@ export function handleAxiosError(
         });
         shownNoInternetError = true;
       }
-
       return;
     }
+    if(disableErrorToast) {
+      showErrorToast("errors.network");
 
-    const url = (err.config?.baseURL ?? "") + "/" + err.config?.url;
-    console.error(err);
-
-    const serverSentryGeneratedId = (
-      err.response?.data as
-        | {
-            customId?: string;
-          }
-        | undefined
-    )?.customId;
-
-    // if we received a custom id from the server, we use that
-    // otherwise we generate our own. that way we can match the client side error with the server side error
-    const customSentryId = serverSentryGeneratedId ?? generateClientErrorCode();
-
-    const sentryErrorId = Sentry.captureException(err, {
-      extra: {
-        url,
-        response: {
-          status: err.response?.status,
-          data: err.response?.data,
-        },
-        message: err.message,
-        request: {
-          headers: err.config?.headers,
-          method: err.config?.method,
-          data: err.config?.data,
-        },
-        customId: customSentryId,
-        receivedCustomId: !!serverSentryGeneratedId,
-      },
-      tags: {
-        customId: customSentryId,
-      },
-    });
-
-    console.error("Sentry error id: ", sentryErrorId);
-    console.error("Custom error id: ", customSentryId);
-
-    if (!disableErrorToast) {
-      showErrorToast(customSentryId, "errors.network", "networkError");
     }
-
     throw err;
   }
 }
 
-function showErrorToast(
-  code: string,
-  customMessage: string | undefined,
-  toastId?: string,
-) {
-  toast.error(<ErrorToastContent code={code} customMessage={customMessage} />, {
-    toastId,
+function showErrorToast( customMessage: string | undefined) {
+  toast.error(customMessage, {
     autoClose: import.meta.env.DEV ? 1000 : false,
     closeOnClick: false,
     draggable: false,

@@ -1,8 +1,8 @@
-import type {
+import {
   ApiCreateCompletedCourse,
   ApiXP,
 } from "../../../packages/apiTypes/src/CompletedCourse";
-import type {
+import {
   calcLevelProgress,
   normalizeCurrentProgress,
 } from "../../../packages/apiTypes/src/academy/calcLevelProgress";
