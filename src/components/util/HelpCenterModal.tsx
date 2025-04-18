@@ -39,14 +39,22 @@ export function HelpCenterModal({
   const organizationContactInfo = trpc.contactInfo.getOrganizationContactInfo.useQuery().data;
   const contactInfo = [organizationContactInfo];
 
-  const isContactEmpty = (obj) =>
-    !obj || !Object.keys(obj).some((k) => k !== "departmentName" && obj[k]);
+  interface Contact {
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    additionalInfo?: string | null;
+    departmentName?: string | null;
+  }
+
+  const isContactEmpty = (obj: Contact | null | undefined): boolean =>
+    !obj || !Object.keys(obj).some((k) => k !== "departmentName" && obj[k as keyof Contact]);
   const filteredContacts = contactInfo.filter(
     (contact) => !isContactEmpty(contact),
   );
   return (
-    <IntercomAppWrapper>
-      <Modal
+/*     <IntercomAppWrapper>
+ */      <Modal
         open={open}
         onClose={() => {
           setOpen(false);
@@ -115,12 +123,12 @@ export function HelpCenterModal({
               icon={<Feedback />}
               text={t("feedbackAndIdeas")}
             />
-            {INTERCOM_ENABLED && <IntercomButton />}
-          </Stack>
+{/*             {INTERCOM_ENABLED && <IntercomButton />}
+ */}          </Stack>
         </ModalDialog>
       </Modal>
-    </IntercomAppWrapper>
-  );
+/*     </IntercomAppWrapper>
+ */  );
 }
 
 export type ContactInfo =

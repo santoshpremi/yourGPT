@@ -46,8 +46,7 @@ export default function OrganizationLayout() {
 
   const { t } = useTranslation();
 
-  const { data: organization, isLoading: isLoadingOrganization } =
-    trpc.organization.getOrganization.useQuery();
+  const { data: organization, isLoading: isLoadingOrganization } = trpc.organization.getOrganization.useQuery();
 
   useEffect(() => {
     if (organization && organization.phaseStatus !== "ok") {

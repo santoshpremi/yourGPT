@@ -25,8 +25,6 @@ function UpgradeModal({ status }: UpgradeModalProps) {
   const { data: metrics } =
     trpc.organizationMetrics.getPhaseAnalytics.useQuery();
 
-  const receiver = "sales@deingpt.com";
-
   const stats = [
     {
       amount: metrics?.numPrompts,
@@ -66,10 +64,6 @@ function UpgradeModal({ status }: UpgradeModalProps) {
           }}
         >
           <Typography level="title-lg">{title}</Typography>
-          <Typography level="body-lg" fontWeight="700" sx={{ mt: -1.5 }}>
-              <a href={`mailto:${receiver}`}>{receiver}</a>
-           </Typography>
-
           <Stack direction="row" flex={1} spacing={1} mt={2}>
             {metrics &&
               stats.map(({ amount, subtitle }, index) => (

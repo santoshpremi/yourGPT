@@ -7,6 +7,7 @@ import {
 } from "../../packages/apiTypes/src/Organization.js";
 import { KnowledgeCollection } from "./api/rag/dataPool/dataPoolTypes.js";
 import { de } from "date-fns/locale.js";
+import { p } from "react-router/dist/development/fog-of-war-Cm1iXIp7.js";
 
 export const t = initTRPC.create();
 
@@ -23,6 +24,18 @@ const mockData = {
     defaultWorkshopId: "550e8400-e29b-41d4-a716-446655440001",
     logoUrl: "",
     avatarUrl: "",
+    phaseStatus: "ok",
+    customTitle: "My Organization",
+    banners: [{
+    id: "welcome-banner",
+    content: "Welcome to our platform!",
+    type: "success"
+    }],
+    phaseUsageStatus: "ok",
+    phaseUsageEnd: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 2 months from now
+    phaseUsageStart: new Date(),
+    phaseUsageDuration: 60, 
+    
   }),
   
   workflows: {
@@ -91,9 +104,9 @@ const mockData = {
 // Organization Metrics Router
 const organizationMetricsRouter = t.router({
   getPhaseAnalytics: t.procedure.query(() => ({
-    numPrompts: 150,
-    totalMinutesSaved: 45,
-    numWorkflowRuns: 28
+    numPrompts: 200,
+    totalMinutesSaved: 500,
+    numWorkflowRuns: 38
   }))
 });
 

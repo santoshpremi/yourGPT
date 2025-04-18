@@ -1,21 +1,27 @@
 //  packages/apiTypes/src/Organization
 import * as z from "zod";
 
-// Make optional fields nullable with defaults
 export const ApiOrganization = z.object({
-  id: z.string().regex(/^org_[a-zA-Z0-9-]{20,30}$/), // More flexible pattern
+  id: z.string(),
   name: z.string(),
   domain: z.array(z.string()),
-  isAcademyOnly: z.boolean().default(false),
-  customPrimaryColor: z.string().default("#4F46E5"),
-  defaultModel: z.string().default("gpt-4"),
-  tenantId: z.string().uuid(),
-  defaultWorkshopId: z.string().uuid(),
-  logoUrl: z.string().default(""),
-  avatarUrl: z.string().default(""),
-  // Mark truly optional fields as optional
-  optionalField: z.string().optional(),
+  isAcademyOnly: z.boolean(),
+  customPrimaryColor: z.string(),
+  defaultModel: z.string(),
+  tenantId: z.string(),
+  defaultWorkshopId: z.string(),
+  logoUrl: z.string(),
+  avatarUrl: z.string(),
+  // Add missing fields
+  phaseStatus: z.enum(["ok", "expired", "creditsExhausted"]),
+  customTitle: z.string().optional(),
+  banners: z.array(z.object({
+    id: z.string(),
+    content: z.string(),
+    type: z.enum(["danger", "warning", "success"])
+  })).optional()
 });
+
 
 export type ApiOrganization = z.infer<typeof ApiOrganization>;
 

@@ -51,6 +51,9 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/api/academy/gamification/xp', (req, res) => {
+  res.json({ xp: 0 }); // Direct JSON response
+});
 
 app.post('/api/trial/extend', (req, res) => {
   // Add your trial extension logic here

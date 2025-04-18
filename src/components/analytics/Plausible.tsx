@@ -10,7 +10,8 @@ export function Plausible() {
     if (!me?.primaryEmail || !organization?.tenantId) return;
     const script = document.createElement("script");
 
-    script.src = "https://trends.adhikari.de/js/script.pageview-props.local.js";
+    script.src = "https://trends.selectcode.de/js/script.pageview-props.local.js";
+
     script.async = true;
 
     script.setAttribute("data-domain", "app.deingpt.com");
@@ -18,9 +19,6 @@ export function Plausible() {
     script.setAttribute("event-tenant-id", organization.tenantId);
 
     document.body.appendChild(script);
-
-    console.log("added plausible script");
-
     return () => {
       document.body.removeChild(script);
     };

@@ -9,7 +9,7 @@ interface TrialConfig {
 export function checkTrialPhase(): PhaseUsageResponse {
   // Default to 2 months trial
   const trialConfig: TrialConfig = {
-    startDate: new Date('2024-01-01'), // Replace with actual signup date
+    startDate: new Date('2025-04-01'), // Replace with actual signup date
     durationMonths: 2
   };
 
