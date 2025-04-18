@@ -9,19 +9,19 @@ import type {
   Chat,
   ModelOverride,
 } from "../../../../backend/src/api/chat/chatTypes.ts";
-import type { KnowledgeCollection } from "../../../../backend/src/api/rag/dataPool/dataPoolTypes.ts";
-import { useUploadDocumentWithToast } from "../../../lib/api/documents.js";
-import { trpc } from "../../../lib/api/trpc/trpc.ts";
-import { allowedMimeTypesForAdiDocuments } from "../../../../backend/src/constants/mime.ts";
+import type { KnowledgeCollection } from "../../../../backend/src/api/rag/dataPool/dataPoolTypes";
+import { useUploadDocumentWithToast } from "../../../lib/api/documents";
+import { trpc } from "../../../lib/api/trpc/trpc";
+import { allowedMimeTypesForAdiDocuments } from "../../../../backend/src/constants/mime";
 import { useTranslation } from "../../../../src/lib/i18n";
-import { NewSourceChip, SourceChip } from "./sources/SourceChip.tsx";
-import { isSpecificLLM } from "../../util/llm.ts";
-import { WarningMessage } from "./WarningMessage.tsx";
+import { NewSourceChip, SourceChip } from "./sources/SourceChip";
+import { isSpecificLLM } from "../../util/llm";
+import { WarningMessage } from "./WarningMessage";
 import ChatSourceContainer, {
   type RagModeInput,
-} from "./sources/ChatSourceContainer.tsx";
-import { DocumentChip } from "./sources/DocumentChip.tsx";
-import { CHAT_INPUT_ID } from "../../../lib/testIds.ts";
+} from "./sources/ChatSourceContainer";
+import { DocumentChip } from "./sources/DocumentChip";
+import { CHAT_INPUT_ID } from "../../../lib/testIds";
 
 export interface AttachedDocument {
   id: string;
@@ -91,15 +91,14 @@ export const ChatInput = React.forwardRef(
       AttachedDocument[]
     >([]);
 
-    const { data: productConfig } = trpc.productConfig.get.useQuery();
+    const { data: productConfig } = trpc.productConfig.getProductConfig.useQuery();
     const { data: documentIntelligenceEnabled } =
       trpc.tools.documentIntelligence.isEnabled.useQuery();
     const organization = trpc.organization.getOrganization.useQuery().data;
     const { data: knowledgeCollections } = trpc.rag.dataPools.getAll.useQuery();
 
     const { mutateAsync: updateRagMode } = trpc.chat.setRagMode.useMutation();
-    const { mutateAsync: markAsSeen } =
-      trpc.rag.dataPools.updateAsSeen.useMutation();
+    const { mutateAsync: markAsSeen } = trpc.rag.dataPools.updateAsSeen.useMutation();
 
     const { t } = useTranslation();
     const uploadDocument = useUploadDocumentWithToast();
@@ -135,11 +134,18 @@ export const ChatInput = React.forwardRef(
       attachedDocumentIds.length === 0 &&
       numLoadingAttachments === 0;
 
-    const chosenModel = model ?? organization?.defaultModel;
+    const chosenModel: ModelOverride | null = model ?? (organization?.defaultModel as ModelOverride | null);
 
     useEffect(() => {
       if (!knowledgeCollections) return;
-      setSources(knowledgeCollections);
+      setSources(
+        knowledgeCollections.map((collection) => ({
+          ...collection,
+          createdAt: new Date(collection.createdAt),
+          updatedAt: new Date(collection.updatedAt),
+          isNew: false,
+        })),
+      );
     }, [knowledgeCollections, chat, setSources]);
 
     const send = () => {

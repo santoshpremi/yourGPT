@@ -6,17 +6,16 @@ import {
 } from "@mui/icons-material";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { useMemo } from "react";
-import { trpc } from "../../lib/api/trpc/trpc.ts";
-import { useTranslation } from "../../lib/i18n.ts";
-import { comparePath } from "../../lib/routeUtils.ts";
-import { TRANSLATE_CONTENT_SIDEBAR_BUTTON_ID } from "../../lib/testIds.ts";
-import { type Path, useParams } from "../../router.ts";
-import { CollapsableButton } from "./CollapsableButton.tsx";
-import { SidebarSection } from "./SidebarSection.tsx";
-import { cn } from "../../lib/cn.ts";
-import { SIDEBAR_ANIMATION_DURATION } from "./Sidebar.tsx";
-import { type LlmName } from "../../../../backend/src/ai/llmMeta.ts";
-
+import { trpc } from "../../lib/api/trpc/trpc";
+import { useTranslation } from "../../lib/i18n";
+import { comparePath } from "../../lib/routeUtils";
+import { TRANSLATE_CONTENT_SIDEBAR_BUTTON_ID } from "../../lib/testIds";
+import { type Path, useParams } from "../../router";
+import { CollapsableButton } from "./CollapsableButton";
+import { SidebarSection } from "./SidebarSection";
+import { cn } from "../../lib/cn";
+import { SIDEBAR_ANIMATION_DURATION } from "./Sidebar";
+import { type LlmName } from "@backend/ai/llmMeta";
 export type Tool = {
   name: string;
   icon: React.ReactElement;
@@ -37,7 +36,7 @@ export default function ToolsList({
   const { data: configuredImageModels } =
     trpc.tools.images.listConfigured.useQuery();
   const { data: enabledModels } = trpc.modelConfig.getEnabled.useQuery();
-  const { data: productConfig } = trpc.productConfig.get.useQuery();
+  const { data: productConfig } = trpc.productConfig.getProductConfig.useQuery();
   const { data: textTranslationEnabled } =
     trpc.tools.translateContent.textTranslator.isEnabled.useQuery();
   const { data: documentTranslatorEnabled } =
@@ -77,7 +76,7 @@ export default function ToolsList({
             enabled: Boolean(
               (productConfig?.meetingSummarizer ||
                 productConfig?.meetingTranscription) &&
-                enabledModels?.includes("gemini-1.5-pro" as LlmName),
+                enabledModels?.includes("gemini-1.5-pro"),
             ),
           },
           {

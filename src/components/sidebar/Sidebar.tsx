@@ -1,3 +1,4 @@
+// src/components/sidebar/Sidebar.tsx
 import {
   AutoAwesome,
   ChatBubbleOutline,
@@ -147,31 +148,34 @@ export function Sidebar({
           }}
           data-testid={SIDEBAR_NEW_CHAT_BUTTON_ID}
         />
-        <SidebarSectionWithHistory
-          isSidebarOpen={isSidebarOpen}
-          content={<ChatsList isSidebarOpen={isSidebarOpen} />}
-          icon={<ChatBubbleOutline />}
-          historyPath="/:organizationId/chats"
-          params={{ organizationId: organization?.id ?? "" }}
-          tooltipContent={t("sidebar.allChats")}
-        />
 
-        {!isSidebarOpen && <Divider />}
+{/* 
+<SidebarSectionWithHistory
+  isSidebarOpen={isSidebarOpen}
+  content={<ChatsList isSidebarOpen={isSidebarOpen} />}
+  icon={<ChatBubbleOutline />}
+  historyPath="/:organizationId/chats"
+  params={{ organizationId: organization?.id ?? "" }}
+  tooltipContent={t("sidebar.allChats")}
+/>
 
-        {/* Tools Section */}
-        <ToolsList isSidebarOpen={isSidebarOpen} />
+{!isSidebarOpen && <Divider />}
 
-        {!isSidebarOpen && <Divider />}
+<ToolsList isSidebarOpen={isSidebarOpen} />
 
-        {/* Workflows Section */}
-        <SidebarSectionWithHistory
-          isSidebarOpen={isSidebarOpen}
-          content={<SidebarWorkflows isSidebarOpen={isSidebarOpen} />}
-          icon={<PlayCircleOutline />}
-          historyPath="/:organizationId/workflows"
-          params={{ organizationId: organization?.id ?? "" }}
-          tooltipContent={t("sidebar.allWorkflows")}
-        />
+{!isSidebarOpen && <Divider />}
+
+<SidebarSectionWithHistory
+  isSidebarOpen={isSidebarOpen}
+  content={<SidebarWorkflows isSidebarOpen={isSidebarOpen} />}
+  icon={<PlayCircleOutline />}
+  historyPath="/:organizationId/workflows"
+  params={{ organizationId: organization?.id ?? "" }}
+  tooltipContent={t("sidebar.allWorkflows")}
+/>
+*/}
+
+        
       </div>
 
       {/* Lower Sidebar */}
@@ -187,6 +191,8 @@ export function Sidebar({
           isSidebarOpen={isSidebarOpen}
         />
         <Divider />
+        {/* 
+
         {organization && organization?.phase !== "NORMAL" && (
           <PhaseContainer
             phase={organization.phase}
@@ -195,6 +201,9 @@ export function Sidebar({
             isSidebarOpen={isSidebarOpen}
           />
         )}
+
+        */}
+
         <div
           style={{
             marginLeft: isSidebarOpen ? 0 : "-6px",

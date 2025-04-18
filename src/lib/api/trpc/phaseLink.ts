@@ -10,29 +10,18 @@ export const phaseLink: TRPCLink<AppRouter> = () => {
       next(op).subscribe({
         error(err) {
           if (err.data?.code === "PRECONDITION_FAILED") {
-            const cause = err.data.cause as PhaseUsageResponse;
-            const isLocked =
-              cause.includes("creditsExhausted") || cause.includes("expired");
+            const message = err.message.toLowerCase();
+            const status: PhaseUsageResponse = 
+              message.includes('credits') ? 'creditsExhausted' :
+              message.includes('expired') ? 'expired' : 'ok';
 
-            if (isLocked) {
-              useTrialStore.setState({
-                status: cause.includes("creditsExhausted")
-                  ? "creditsExhausted"
-                  : "expired",
-              });
-
-              return;
-            }
+            useTrialStore.setState({ status });
+            return;
           }
-
           observer.error(err);
         },
-        next(value) {
-          observer.next(value);
-        },
-        complete() {
-          observer.complete();
-        },
-      }),
+        next(value) { observer.next(value); },
+        complete() { observer.complete(); }
+      })
     );
 };

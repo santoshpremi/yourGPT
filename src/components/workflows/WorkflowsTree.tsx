@@ -6,6 +6,7 @@ import { toast } from "react-toastify";
 import { DelayedLoader } from "../util/DelayedLoader";
 import { WorkflowsTreeGroup } from "./WorkflowsTreeGroup";
 import { trpc } from "../../lib/api/trpc/trpc";
+
 import { useGuide } from "../onboarding/useGuide";
 import { useTranslation } from "../../lib/i18n";
 import { optimisticWorkflowReorder } from "../../lib/optimistic/reordering";
@@ -18,7 +19,7 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
   const { t } = useTranslation();
   const { completed: demoFinished } = useGuide();
   const utils = trpc.useUtils();
-
+  const { data: templates } = trpc.workflows.getTemplates.useQuery();
   const { data: departments } = trpc.organization.department.all.useQuery();
   const { data: favoriteWorkflows } = trpc.workflows.favorites.useQuery();
   const { mutateAsync: toggleFavorite } =

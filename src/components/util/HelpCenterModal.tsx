@@ -18,9 +18,9 @@ import {
   Feedback,
   PlayCircle,
 } from "@mui/icons-material";
-import { trpc } from "../../lib/api/trpc/trpc.ts";
-import { useModals } from "../../router.ts";
-import { IntercomAppWrapper, IntercomButton } from "./IntercomButton.tsx";
+import { trpc } from "../../lib/api/trpc/trpc";
+import { useModals } from "../../router";
+import { IntercomAppWrapper, IntercomButton } from "./IntercomButton";
 
 const deingpt_SUPPORT_EMAIL = "support@deingpt.com";
 
@@ -36,14 +36,8 @@ export function HelpCenterModal({
   const { t } = useTranslation();
   const modals = useModals();
 
-  const organizationContactInfo =
-    trpc.contactInfo.getOrganizationContactInfo.useQuery().data;
-  const allDepartmentsContactInfos =
-    trpc.contactInfo.getAllDepartmentsContactInfos.useQuery().data;
-  const contactInfo = [
-    organizationContactInfo,
-    ...(allDepartmentsContactInfos ?? []),
-  ];
+  const organizationContactInfo = trpc.contactInfo.getOrganizationContactInfo.useQuery().data;
+  const contactInfo = [organizationContactInfo];
 
   const isContactEmpty = (obj) =>
     !obj || !Object.keys(obj).some((k) => k !== "departmentName" && obj[k]);

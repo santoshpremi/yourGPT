@@ -31,7 +31,7 @@ export function SidebarBottomButtons({
 }) {
   const { t } = useTranslation();
   const organization = useOrganization();
-  const { data: productConfig } = trpc.productConfig.get.useQuery();
+  const { data: productConfig } = trpc.productConfig.getProductConfig.useQuery();
   const pathname = useLocation().pathname;
 
   const bottomButtons: BottomButton[] = [
