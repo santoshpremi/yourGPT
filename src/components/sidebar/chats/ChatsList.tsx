@@ -10,6 +10,7 @@ import { ChatsListItem } from "./ChatsListItem";
 import { useNavigate, useParams, type Path } from "../../../router";
 import { useTranslation } from "../../../lib/i18n";
 import { LeafItem } from "../tree/LeafItem";
+import type { ChatListItem } from "../../../../backend/src/api/chat/chatTypes";
 
 const DEFAULT_LAST_CHATS_NUMBER = 3;
 
@@ -51,9 +52,9 @@ export function ChatsList({ isSidebarOpen }: { isSidebarOpen: boolean }) {
           </Typography>
         ) : (
           <List className="!mt-1 gap-2 !p-0" size="sm">
-            {lastChats.map((chat) => (
-              <ChatsListItem key={chat.id} chat={chat} />
-            ))}
+{lastChats.map((chat: ChatListItem) => (
+  <ChatsListItem key={chat.id} chat={chat} />
+))}
             <LeafItem
               isSelected={isActive("/:organizationId/chats")}
               key={t("sidebar.allChats")}

@@ -149,7 +149,6 @@ export function Sidebar({
           data-testid={SIDEBAR_NEW_CHAT_BUTTON_ID}
         />
 
-{/* 
 <SidebarSectionWithHistory
   isSidebarOpen={isSidebarOpen}
   content={<ChatsList isSidebarOpen={isSidebarOpen} />}
@@ -173,7 +172,6 @@ export function Sidebar({
   params={{ organizationId: organization?.id ?? "" }}
   tooltipContent={t("sidebar.allWorkflows")}
 />
-*/}
 
         
       </div>
@@ -191,7 +189,6 @@ export function Sidebar({
           isSidebarOpen={isSidebarOpen}
         />
         <Divider />
-        {/* 
 
         {organization && organization?.phase !== "NORMAL" && (
           <PhaseContainer
@@ -202,7 +199,6 @@ export function Sidebar({
           />
         )}
 
-        */}
 
         <div
           style={{

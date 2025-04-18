@@ -1,5 +1,5 @@
 // backend/src/api/organization/organizationTypes.ts
-export type OrganizationPhase = "PILOT" | "TRIAL" | "ACTIVE";
+export type OrganizationPhase = "PILOT" | "TRIAL" | "ACTIVE" | "CREDIT" | "NORMAL" | "EXPIRED" | "CREDITS_EXHAUSTED";
 
 export interface PhaseProgressParams {
   start: string;

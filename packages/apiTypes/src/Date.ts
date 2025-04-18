@@ -6,3 +6,4 @@ export const ApiDate = z.union([z.string(), z.date()]).transform((val) => {
   }
   return val;
 });
+export type ApiDate = z.infer<typeof ApiDate>;

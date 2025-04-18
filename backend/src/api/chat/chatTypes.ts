@@ -1,4 +1,6 @@
-import { ApiDate } from "../../../../packages/apiTypes/src/Date";
+// backend/src/api/chat/chatTypes.ts
+import  { ApiDate } from "@apiTypes/Date";
+//import { ApiDate } from "../../../../packages/apiTypes/src/Date";
 import z from "zod";
 import type { LlmName } from "../../ai/llmMeta";
 import { LlmNames } from "../../ai/llmMeta";
@@ -122,3 +124,4 @@ export type ChatListItem = z.infer<typeof ChatListItem>;
 export type ChatInfiniteQueryResult = z.infer<
   typeof ChatInfiniteQueryResultSchema
 >;
+

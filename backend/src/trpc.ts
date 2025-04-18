@@ -6,6 +6,7 @@ import {
   ApiPatchOrganization,
 } from "../../packages/apiTypes/src/Organization.js";
 import { KnowledgeCollection } from "./api/rag/dataPool/dataPoolTypes.js";
+import { ChatInfiniteQueryResultSchema, ChatListItem } from "../../backend/src/api/chat/chatTypes.js";
 import { de } from "date-fns/locale.js";
 import { p } from "react-router/dist/development/fog-of-war-Cm1iXIp7.js";
 
@@ -35,6 +36,9 @@ const mockData = {
     phaseUsageEnd: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 2 months from now
     phaseUsageStart: new Date(),
     phaseUsageDuration: 60, 
+    phase: "TRIAL",
+    phaseStartDate: new Date(),
+    phaseEndDate: new Date(Date.now() + 60 * 86400000), // 60 days from now
     
   }),
   
@@ -210,6 +214,24 @@ const chatRouter = t.router({
       customSourceId: z.string().optional(),
     }))
     .mutation(() => true),
+  getAll: t.procedure
+    .input(z.object({
+      limit: z.number().min(1).max(100),
+      cursor: z.string().optional(),
+    }))
+    .output(ChatInfiniteQueryResultSchema)
+    .query(({ input }) => ({
+      items: [
+        {
+          id: "chat-1",
+          name: "Sample Chat",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+          organizationId: "org-123"
+        }
+      ] as ChatListItem[],
+      nextCursor: undefined
+    }))
 });
 
 // Department Router
@@ -275,6 +297,8 @@ export const appRouter = t.router({
       trialEnd: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000) // 2 months from now
     }))
   }),
+
+  
 
   organizationMetrics: organizationMetricsRouter,
   workflows: workflowsRouter,

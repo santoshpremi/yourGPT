@@ -22,14 +22,14 @@
       "@/*": ["./src/*"],
       "@backend/*": ["./backend/src/*"],
       "@api/*": ["./src/lib/api/*"],
-      "@types/*": ["./packages/apiTypes/src/*"],
-      // Add this new path mapping
-      "@credits/*": ["./backend/src/util/credits/*"]
+      "@apiTypes/*": ["./packages/apiTypes/src/*"],
+      "@credits/*": ["./backend/src/util/credits/*"],
+      "@rag/*": ["./backend/src/api/rag/*"] 
     }
   },
   "include": [
     "src/**/*",
-    "backend/src/**/*",
+    "backend/src/**/*",   
     "packages/apiTypes/src/**/*",
     "**/*.ts",
     "**/*.tsx"

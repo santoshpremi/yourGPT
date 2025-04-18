@@ -13,13 +13,18 @@ export const ApiOrganization = z.object({
   logoUrl: z.string(),
   avatarUrl: z.string(),
   // Add missing fields
-  phaseStatus: z.enum(["ok", "expired", "creditsExhausted"]),
   customTitle: z.string().optional(),
   banners: z.array(z.object({
     id: z.string(),
     content: z.string(),
     type: z.enum(["danger", "warning", "success"])
-  })).optional()
+  })).optional(),
+
+    // Add phase fields
+  phase: z.enum(["TRIAL", "NORMAL", "CREDIT"]),
+  phaseStartDate: z.date().optional(),
+  phaseEndDate: z.date().optional(),
+  phaseStatus: z.enum(["ok", "expired", "creditsExhausted"]),
 });
 
 
