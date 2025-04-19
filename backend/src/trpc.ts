@@ -29,7 +29,7 @@ const mockData = {
     customTitle: "My Organization",
     banners: [{
     id: "welcome-banner",
-    content: "Welcome to our platform!",
+    content: "Welcome to ou!",
     type: "success"
     }],
     phaseUsageStatus: "ok",

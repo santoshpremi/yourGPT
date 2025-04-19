@@ -33,6 +33,13 @@
     "packages/apiTypes/src/**/*",
     "**/*.ts",
     "**/*.tsx"
-  ],
+  ],  
+"ts-node": {
+  "experimentalSpecifierResolution": "node",
+  "experimentalResolver": true,
+  "transpileOnly": false,
+  "esm": true,
+  "logError": true,
+},
   "exclude": ["node_modules", "**/*.spec.ts"]
 }

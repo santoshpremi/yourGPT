@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "A project for App.deingpt.com",
   "main": "src/main.tsx",
+  "type": "module",
+
   "scripts": {
     "dev": "concurrently \"vite\" \"npm run dev:backend\"",
-    "dev:backend": "NODE_ENV=development node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' backend/src/server.ts",
+    "dev:backend": "NODE_OPTIONS='--experimental-loader=ts-node/esm --loader=ts-node/esm' node -r tsconfig-paths/register backend/src/server.ts",
     "build": "vite build",
     "preview": "vite preview"
   },
@@ -190,6 +192,5 @@
   "engines": {
     "node": ">=16.0.0",
     "npm": ">=7.0.0"
-  },
-  "type": "module"
+  }
 }
