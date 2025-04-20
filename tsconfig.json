@@ -24,6 +24,8 @@
       "@api/*": ["./src/lib/api/*"],
       "@apiTypes/*": ["./packages/apiTypes/src/*"],
       "@credits/*": ["./backend/src/util/credits/*"],
+      "@workflow/*": ["./backend/src/api/workflow/*"],
+
       "@rag/*": ["./backend/src/api/rag/*"] 
     }
   },

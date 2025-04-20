@@ -4,7 +4,6 @@
   "description": "A project for App.deingpt.com",
   "main": "src/main.tsx",
   "type": "module",
-
   "scripts": {
     "dev": "concurrently \"vite\" \"npm run dev:backend\"",
     "dev:backend": "NODE_OPTIONS='--experimental-loader=ts-node/esm --loader=ts-node/esm' node -r tsconfig-paths/register backend/src/server.ts",
@@ -171,7 +170,8 @@
     "@esbuild-kit/esm-loader": "^2.6.5",
     "@sentry/vite-plugin": "^3.3.1",
     "@types/cors": "^2.8.13",
-    "@types/express": "^4.17.17",
+    "@types/express": "^4.17.21",
+    "@types/express-serve-static-core": "^5.0.6",
     "@types/lodash": "^4.17.16",
     "@types/node": "^22.13.14",
     "@types/react": "18.3.18",

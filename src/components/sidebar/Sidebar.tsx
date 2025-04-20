@@ -164,14 +164,14 @@ export function Sidebar({
 
 {!isSidebarOpen && <Divider />}
 
-{/* <SidebarSectionWithHistory
+<SidebarSectionWithHistory
   isSidebarOpen={isSidebarOpen}
   content={<SidebarWorkflows isSidebarOpen={isSidebarOpen} />}
   icon={<PlayCircleOutline />}
   historyPath="/:organizationId/workflows"
   params={{ organizationId: organization?.id ?? "" }}
   tooltipContent={t("sidebar.allWorkflows")}
-/> */}
+/> 
 
         
       </div>

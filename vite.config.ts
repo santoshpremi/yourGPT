@@ -16,7 +16,7 @@ export default defineConfig({
       "/trpc": {
         target: "http://localhost:8003",
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/trpc/, ""),
+        rewrite: (path) => path.replace(/^\/trpc/, '')
       },
     },
   },

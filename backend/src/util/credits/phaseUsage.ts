@@ -1,5 +1,17 @@
 // backend/src/util/credits/phaseUsage.ts
 export type PhaseUsageResponse = 'ok' | 'expired' | 'creditsExhausted';
+export interface Organization {
+  id: string;
+  name: string;
+  domain: string[];
+  logoUrl: string;
+  avatarUrl: string;
+  tenantId: string;
+  defaultWorkshopId: string;
+  customPrimaryColor: string;
+  defaultModel: string;
+  isAcademyOnly: boolean;
+}
 
 interface TrialConfig {
   startDate: Date;

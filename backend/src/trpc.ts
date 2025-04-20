@@ -9,9 +9,25 @@ import { KnowledgeCollection } from "./api/rag/dataPool/dataPoolTypes.js";
 import { ChatInfiniteQueryResultSchema, ChatListItem } from "../../backend/src/api/chat/chatTypes.js";
 import { de } from "date-fns/locale.js";
 import { p } from "react-router/dist/development/fog-of-war-Cm1iXIp7.js";
+import {  Workflow, WorkflowCreateInput, WorkflowUpdateInput, WorkflowGetAllInput } from "./api/workflow/workflowTypes";
+import { Department } from "./api/organization/departmentTypes";
+import { Favorite } from "@mui/icons-material";
+
 
 export const t = initTRPC.create();
 
+
+const mockWorkflows: Workflow[] = [
+  {
+    id: "wf-1",
+    name: "Onboarding Workflow",
+    description: "New employee onboarding process",
+    index: 0,
+    departmentId: "dept-1",
+    createdAt: new Date(),
+    updatedAt: new Date()
+  }
+];
 // Mock data storage
 const mockData = {
   organization: ApiOrganization.parse({
@@ -114,20 +130,75 @@ const organizationMetricsRouter = t.router({
   }))
 });
 
-// Workflows Router
-const workflowsRouter = t.router({
-  getTemplates: t.procedure
-    .input(z.void())
-    .query(() => mockData.workflows.templates)
+
+// Add to organization router
+const organizationRouter = t.router({
+  department: t.router({
+    all: t.procedure
+      .output(z.array(Department))
+      .query(() => []), // Implement your actual query
+  }),
 });
+// Workflows Router
+
+const workflowsRouter = t.router({
+  getAll: t.procedure
+    .input(WorkflowGetAllInput)
+    .output(z.array(Workflow))
+    .query(({ input }) => {
+      return mockWorkflows.filter((w: Workflow) => 
+        w.departmentId === input.departmentId
+      );
+    }),
+  
+  create: t.procedure
+    .input(WorkflowCreateInput)
+    .mutation(({ input }) => ({ id: "new-id", ...input })),
+  
+  update: t.procedure
+    .input(WorkflowUpdateInput)
+    .mutation(({ input }) => input),
+
+    
+  favorites: t.procedure
+    .output(z.array(Workflow))
+    .query(() => []), 
+
+    
+  toggleFavorite: t.procedure
+    .input(z.object({ workflow: z.object({ id: z.string() }) }))
+    .mutation(() => true),
+    
+  updateDepartmentAndPosition: t.procedure
+    .input(z.object({
+      workflow: z.object({
+        id: z.string(),
+        departmentId: z.string(),
+        index: z.number()
+      }),
+      sourceDepartmentId: z.string()
+    }))
+    .mutation(() => true),
+    
+  getTemplates: t.procedure
+    .output(z.array(Workflow))
+    .query(() => [])
+});
+
 
 // Usage Guidelines Router
-const usageGuidelinesRouter = t.router({
-  getGuidelines: t.procedure
-    .input(z.void())
-    .query(() => mockData.guidelines.content)
-});
-
+const usageGuidelinesRouter =  t.router({
+    getGuidelines: t.procedure
+      .input(z.void())
+      .output(z.object({
+        accepted: z.boolean(),
+        lastUpdated: z.date()
+      }))
+      .query(() => ({
+        accepted: true,
+        lastUpdated: new Date()
+      }))
+  })
 // Contact Info Router
 const contactInfoRouter = t.router({
   getOrganizationContactInfo: t.procedure
@@ -142,9 +213,6 @@ const productConfigRouter = t.router({
     .input(z.void())
     .query(() => mockData.productConfig)
 });
-
-
-
 
 // Add ModelConfig router
 const modelConfigRouter = t.router({
@@ -301,6 +369,7 @@ export const appRouter = t.router({
   
 
   organizationMetrics: organizationMetricsRouter,
+  organizational: organizationRouter,
   workflows: workflowsRouter,
   usageGuidelines: usageGuidelinesRouter,
   contactInfo: contactInfoRouter,

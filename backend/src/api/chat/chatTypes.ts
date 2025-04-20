@@ -10,9 +10,23 @@ import { LlmNames } from "../../ai/llmMeta";
  * Includes all options from ApiTextModelEnum and an additional 'automatic' option
  * which allows the system to select the best model automatically.
  */
-export const ModelOverride = z
-  .enum(["automatic", ...LlmNames] as const)
-  .catch(() => "gpt-4o-mini" as const satisfies LlmName);
+export const ModelOverride = z.enum([
+  "automatic",
+  "sonar", 
+  "sonar-deep-research",
+  "gpt-4o-mini",
+  "gpt-4o",
+  "o1-us",
+  "o3-mini",
+  "claude-3-7-sonnet",
+  "claude-3-7-sonnet-thinking",
+  "gemini-1.5-pro", 
+  "gemini-2.0-flash",
+  "llama-3.3-fast",
+  "deepseek-v3",
+  "deepseek-r1"
+]).catch("gpt-4o-mini");
+
 
 export const RagMode = z.enum(["OFF", "AUTO", "CUSTOM"]);
 export type RagMode = z.infer<typeof RagMode>;

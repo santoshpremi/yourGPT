@@ -1,3 +1,4 @@
+//src/components/workflows/WorkflowsTreeGroup.tsx
 import {
   Accordion,
   AccordionSummary,
@@ -5,8 +6,9 @@ import {
   AccordionDetails,
   List,
 } from "@mui/joy";
-import { Draggable, Droppable } from "react-beautiful-dnd";
-import { type Workflow } from "../../../../backend/src/api/workflow/workflowTypes";
+import { Draggable, Droppable } from "@hello-pangea/dnd";
+import { type Workflow } from "@workflow/workflowTypes";
+//import { type Workflow } from "../../../../backend/src/api/workflow/workflowTypes";
 import { useTranslation } from "../../lib/i18n";
 import { twMerge } from "tailwind-merge";
 import { WorkflowItem } from "../sidebar/workflows/WorkflowItem";

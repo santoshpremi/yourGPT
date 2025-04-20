@@ -1,11 +1,15 @@
 // backend/src/server.ts
+// backend/src/server.ts
 import express, { Application, Request, Response } from "express";
+import { ParamsDictionary } from "express-serve-static-core";
+
 import path from "path";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "./trpc.js";
 import cors from "cors";
 import { fileURLToPath } from "url";
 import { v4 as uuidv4 } from 'uuid';
+
 
 // Type declarations
 declare global {
@@ -62,22 +66,23 @@ app.post('/api/trial/extend', (req, res) => {
 
 // Organization middleware
 app.use(['/api/organizations/:orgId', '/:organizationId'], 
-  (req, res, next) => {
+  (req: Request<ParamsDictionary & { orgId?: string; organizationId?: string }>, res, next) => {
     const orgId = req.params.orgId || req.params.organizationId || 'default_org';
     
     if (!organizations.has(orgId)) {
       organizations.set(orgId, createOrganization(orgId));
     }
     
-    const organization = organizations.get(orgId);
-    if (!organization) {
-      return res.status(404).json({ error: "Organization not found" });
+    // 3. Type-safe assignment
+    const org = organizations.get(orgId);
+    if (!org) {
+      return res.status(500).json({ error: "Organization initialization failed" });
     }
     
-    req.organization = organization;
+    // 4. Direct type assertion
+    req.organization = org;
     next();
-  }
-);
+  });
 
 // Helper function to create organizations
 function createOrganization(orgId: string): Organization {
@@ -97,16 +102,18 @@ function createOrganization(orgId: string): Organization {
 
 // API Endpoints
 // backend/src/server.ts
-app.get("/api/organizations/:orgId/users/me", (req, res) => {
-  const org = req.organization;
+app.get("/api/organizations/:orgId/users/me", 
+  (req: Request<{ orgId: string }>, res: Response) => {
+    // 6. Now safely accessible
+    const org = req.organization;
   
   // Return proper JSON structure
   res.json({
-    id: "user_123",
     firstName: "John",
-    lastName: "Doe",
+    lastName: "Doe",  
     email: "john@meingpt.com",
     organizationId: req.params.orgId,
+    ...org,
     logoUrl: org.logoUrl,
     avatarUrl: org.avatarUrl,
     tenantId: org.tenantId,

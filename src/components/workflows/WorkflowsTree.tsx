@@ -1,8 +1,8 @@
-// src/components/workflows/WorkflowsTree.tsx
+//
 import { AccordionGroup, Typography } from "@mui/joy";
 import Fuse from "fuse.js";
 import { useMemo } from "react";
-import { DragDropContext } from "react-beautiful-dnd";
+import { DragDropContext } from "@hello-pangea/dnd";
 import { toast } from "react-toastify";
 import { DelayedLoader } from "../util/DelayedLoader";
 import { WorkflowsTreeGroup } from "./WorkflowsTreeGroup";
@@ -12,7 +12,8 @@ import { useGuide } from "../onboarding/useGuide";
 import { useTranslation } from "../../lib/i18n";
 import { optimisticWorkflowReorder } from "../../lib/optimistic/reordering";
 import { DemoWorkflowItem } from "./demo/DemoWorkflowItem";
-
+import type { Department } from "@backend/api/organization/departmentTypes";
+import type { Workflow } from "@backend/api/workflow/workflowTypes";
 export const FAVORITE_DEPARTMENT_ID = "FAVORITE_DEPARTMENT";
 export const DEMO_DEPARTMENT_ID = "DEMO_DEPARTMENT";
 
@@ -20,8 +21,7 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
   const { t } = useTranslation();
   const { completed: demoFinished } = useGuide();
   const utils = trpc.useUtils();
-  const { data: templates } = trpc.workflows.getTemplates.useQuery();
-  const { data: departments } = trpc.organization.department.all.useQuery();
+  const { data: departments } = trpc.organizational.department.all.useQuery();
   const { data: favoriteWorkflows } = trpc.workflows.favorites.useQuery();
   const { mutateAsync: toggleFavorite } =
     trpc.workflows.toggleFavorite.useMutation();
@@ -29,9 +29,9 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
   const { mutateAsync: updateWorkflowDepartmentAndPosition } =
     trpc.workflows.updateDepartmentAndPosition.useMutation({
       onMutate: async (input) => {
-        await utils.organization.department.all.cancel();
+        await utils.organizational.department.all.cancel();
 
-        const currentDepartments = utils.organization.department.all.getData()!;
+        const currentDepartments = utils.organizational.department.all.getData()!;
 
         const updatedDepartments = optimisticWorkflowReorder(
           currentDepartments,
@@ -41,7 +41,7 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
           input.workflow.index,
         );
 
-        utils.organization.department.all.setData(
+        utils.organizational.department.all.setData(
           undefined,
           updatedDepartments,
         );
@@ -49,13 +49,13 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
         return { previousDepartments: currentDepartments };
       },
       onError: (err, input, ctx) => {
-        utils.organization.department.all.setData(
+        utils.organizational.department.all.setData(
           undefined,
           ctx!.previousDepartments,
         );
       },
       onSettled: async () => {
-        await utils.organization.department.all.invalidate();
+        await utils.organizational.department.all.invalidate();
       },
       onSuccess: async () => {
         toast.success(t("workflowMoved"));
@@ -149,7 +149,13 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
             departmentId={FAVORITE_DEPARTMENT_ID}
             isFavorite={() => true}
             title={t("favorites")}
-            workflows={favoriteWorkflows ?? []}
+            workflows={
+              favoriteWorkflows?.map((workflow) => ({
+                ...workflow,
+                createdAt: new Date(workflow.createdAt),
+                updatedAt: new Date(workflow.updatedAt),
+              })) ?? []
+            }
           />
           {filteredDepartments?.map((department) => (
             <WorkflowsTreeGroup
@@ -158,9 +164,13 @@ export function WorkflowsTree({ searchValue }: { searchValue: string }) {
               title={
                 department.isPersonal ? t("personalArea") : department.name
               }
-              workflows={department.workflows}
+              workflows={department.workflows.map((workflow) => ({
+                ...workflow,
+                createdAt: new Date(workflow.createdAt),
+                updatedAt: new Date(workflow.updatedAt),
+              }))}
               isMoveDisabled={!department.writePermission}
-              isFavorite={(workflowId) =>
+            isFavorite={(workflowId) =>
                 !!favoriteWorkflows?.some((wf) => wf.id === workflowId)
               }
             />
