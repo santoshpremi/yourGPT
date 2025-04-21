@@ -11,7 +11,6 @@ import { de } from "date-fns/locale.js";
 import { p } from "react-router/dist/development/fog-of-war-Cm1iXIp7.js";
 import {  Workflow, WorkflowCreateInput, WorkflowUpdateInput, WorkflowGetAllInput } from "./api/workflow/workflowTypes";
 import { Department } from "./api/organization/departmentTypes";
-import { Favorite } from "@mui/icons-material";
 
 
 export const t = initTRPC.create();
@@ -57,12 +56,6 @@ const mockData = {
     phaseEndDate: new Date(Date.now() + 60 * 86400000), // 60 days from now
     
   }),
-  
-  workflows: {
-    templates: [
-      { id: "1", name: "Default Workflow", steps: [] }
-    ]
-  },
   
   guidelines: {
     content: "Sample usage guidelines text..."
@@ -153,16 +146,41 @@ const workflowsRouter = t.router({
   
   create: t.procedure
     .input(WorkflowCreateInput)
-    .mutation(({ input }) => ({ id: "new-id", ...input })),
+    .mutation(() => "new-workflow-id"),
   
   update: t.procedure
     .input(WorkflowUpdateInput)
     .mutation(({ input }) => input),
 
-    
+
   favorites: t.procedure
     .output(z.array(Workflow))
     .query(() => []), 
+
+  getTemplates: t.procedure
+    .input(z.object({ language: z.enum(["en", "de"]) }))
+    .output(z.array(z.object({ id: z.string(), name: z.string(), description: z.string() }))) 
+    .query(({ input }) => {
+      const templates = [
+        { id: "template-1", name: "Template 1", description: "Description 1" },
+        { id: "template-2", name: "Template 2", description: "Description 2" },
+      ];
+      return input.language === "de" ? templates : templates;
+    }),
+
+    wizard : t.procedure
+    .input(z.object({ language: z.enum(["en", "de"]), query: z.string() }))
+    .mutation(async ({ input }) => {
+      const workflow = {
+        id: "new-workflow-id",
+        name: "Generated Workflow",
+        description: "This is a generated workflow.",
+        departmentId: "dept-1",
+      };
+      return workflow;
+    }),
+
+
 
     
   toggleFavorite: t.procedure
@@ -180,9 +198,6 @@ const workflowsRouter = t.router({
     }))
     .mutation(() => true),
     
-  getTemplates: t.procedure
-    .output(z.array(Workflow))
-    .query(() => [])
 });
 
 
@@ -307,7 +322,7 @@ const departmentRouter = t.router({
   personal: t.router({
     get: t.procedure
       .input(z.void())
-      .query(() => ({ message: "Personal department data" }))
+      .query(() => ({ id: "Personal department data" }))
   })
 });
 

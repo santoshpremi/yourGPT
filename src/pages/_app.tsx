@@ -34,7 +34,7 @@ export default function RootLayout() {
     <TrpcProvider>
       <ToastContainer hideProgressBar={true} limit={5} />
       <UnsupportedBrowserDetector />
-{/*       <SWRConfig
+       <SWRConfig
         value={{
           onError: (err) => {
             console.error("swr error", err);
@@ -48,9 +48,9 @@ export default function RootLayout() {
             }
           },
         }}
-      > */}
+      > 
         <RootContent />
-      {/* </SWRConfig> */}
+       </SWRConfig> 
     </TrpcProvider>
   );
 }

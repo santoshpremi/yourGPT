@@ -39,11 +39,9 @@ export default function CreateWorkflowModal({
   const navigate = useNavigate();
   const currentOrgId = useCurrentOrganizationId();
 
-  const { mutateAsync: generateWorkflow, isPending: isGenerating } =
-    trpc.workflows.wizard.generate.useMutation();
+  const { mutateAsync: generateWorkflow, isPending: isGenerating } = trpc.workflows.wizard.useMutation();
   const { mutateAsync: createWorkflow } = trpc.workflows.create.useMutation();
-  const { data: personalDepartment } =
-    trpc.organization.department.personal.useQuery();
+  const { data: personalDepartment } =  trpc.department.personal.get.useQuery();
   const { data: workflowTemplates } = trpc.workflows.getTemplates.useQuery({
     language: i18n.language as "en" | "de",
   });
@@ -71,7 +69,7 @@ export default function CreateWorkflowModal({
     if (wizardInput.length === 0 || isGenerating) return;
     try {
       const workflow = await generateWorkflow({
-        language: i18n.language,
+        language: i18n.language as "en" | "de",
         query: wizardInput,
       });
 
@@ -97,11 +95,10 @@ export default function CreateWorkflowModal({
   const handleManualCreate = async (templateId?: string) => {
     try {
       const workflowId = await createWorkflow({
-        workflow: {
-          templateId,
-          name: t("unnamedWorkflow"),
-          departmentId: personalDepartment?.id ?? "",
-        },
+        templateId,
+        name: t("unnamedWorkflow"),
+        departmentId: personalDepartment?.id ?? "",
+        index: 0
       });
 
       if (!workflowId) {

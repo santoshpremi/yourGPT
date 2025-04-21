@@ -1,8 +1,6 @@
 // backend/src/server.ts
-// backend/src/server.ts
 import express, { Application, Request, Response } from "express";
 import { ParamsDictionary } from "express-serve-static-core";
-
 import path from "path";
 import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { appRouter } from "./trpc.js";
@@ -11,12 +9,10 @@ import { fileURLToPath } from "url";
 import { v4 as uuidv4 } from 'uuid';
 
 
-// Type declarations
-declare global {
-  namespace Express {
-    interface Request {
-      organization: Organization;
-    }
+// Add this near the top of the file, replacing the existing declaration
+declare module 'express-serve-static-core' {
+  interface Request {
+    organization: Organization;
   }
 }
 
@@ -64,25 +60,47 @@ app.post('/api/trial/extend', (req, res) => {
   res.json({ status: 'extended', months: 2 });
 });
 
-// Organization middleware
+// 2. Proper middleware typing
 app.use(['/api/organizations/:orgId', '/:organizationId'], 
-  (req: Request<ParamsDictionary & { orgId?: string; organizationId?: string }>, res, next) => {
+  (req: Request<{ orgId?: string; organizationId?: string }>, res, next) => {
     const orgId = req.params.orgId || req.params.organizationId || 'default_org';
     
     if (!organizations.has(orgId)) {
       organizations.set(orgId, createOrganization(orgId));
     }
     
-    // 3. Type-safe assignment
     const org = organizations.get(orgId);
     if (!org) {
       return res.status(500).json({ error: "Organization initialization failed" });
     }
     
-    // 4. Direct type assertion
     req.organization = org;
     next();
   });
+
+// API Endpoints
+app.get("/api/organizations/:orgId/users/me", 
+  (req: Request<{ orgId: string }>, res: Response) => {
+    res.json({
+      firstName: "John",
+      lastName: "Doe",
+      email: "john@meingpt.com",
+      organizationId: req.params.orgId,
+      ...req.organization,
+      isOrganizationAdmin: true,
+      tourCompleted: false,
+      roles: ["USER"],
+      jobDescription: "Developer",
+      onboarded: true,
+      isSuperUser: false,
+      company: "My Company",
+      imageUrl: req.organization.avatarUrl,
+      primaryEmail: "john@meingpt.com",
+      isSuperUserOnly: false,
+      acceptedGuidelines: true
+    });
+  });
+
 
 // Helper function to create organizations
 function createOrganization(orgId: string): Organization {
@@ -100,42 +118,7 @@ function createOrganization(orgId: string): Organization {
   };
 }
 
-// API Endpoints
-// backend/src/server.ts
-app.get("/api/organizations/:orgId/users/me", 
-  (req: Request<{ orgId: string }>, res: Response) => {
-    // 6. Now safely accessible
-    const org = req.organization;
-  
-  // Return proper JSON structure
-  res.json({
-    firstName: "John",
-    lastName: "Doe",  
-    email: "john@meingpt.com",
-    organizationId: req.params.orgId,
-    ...org,
-    logoUrl: org.logoUrl,
-    avatarUrl: org.avatarUrl,
-    tenantId: org.tenantId,
-    defaultWorkshopId: org.defaultWorkshopId,
-    customPrimaryColor: org.customPrimaryColor,
-    defaultModel: org.defaultModel,
-    isOrganizationAdmin: true,
-    tourCompleted: false,
-    roles: ["USER"],
-    jobDescription: "Developer",
-    onboarded: true,
-    isSuperUser: false,
-    company: "My Company",
-    // Add Zod-required fields
-    imageUrl: org.avatarUrl,
-    primaryEmail: "john@meingpt.com",
-    isSuperUserOnly: false,
-    acceptedGuidelines: true
-  });
-});
-
-// tRPC configuration
+//  TRPC context typing
 app.use(
   "/trpc",
   createExpressMiddleware({
