@@ -139,6 +139,10 @@ const workflowsRouter = t.router({
     .input(WorkflowGetAllInput)
     .output(z.array(Workflow))
     .query(({ input }) => {
+
+      if (!input || !input.departmentId) {
+        return mockWorkflows;
+      }
       return mockWorkflows.filter((w: Workflow) => 
         w.departmentId === input.departmentId
       );

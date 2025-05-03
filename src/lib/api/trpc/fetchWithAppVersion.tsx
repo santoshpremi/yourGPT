@@ -1,3 +1,4 @@
+//src/lib/api/trpc/fetchWithAppVersion.tsx
 import { Refresh } from "@mui/icons-material";
 import { Button } from "@mui/joy";
 import { t } from "i18next";
@@ -6,8 +7,8 @@ import { toast } from "react-toastify";
 let lastAppVersion: string | null = null;
 
 export async function fetchWithAppVersion(
-  input: RequestInfo,
-  init?: RequestInit,
+  input: string | URL | Request,  // Changed from RequestInfo to match FetchEsque
+  init?: RequestInit
 ): Promise<Response> {
   const headers = new Headers(init?.headers);
 

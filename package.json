@@ -179,6 +179,7 @@
     "@types/uuid": "^10.0.0",
     "@types/ws": "^8.5.5",
     "@vitejs/plugin-react": "4.2.1",
+    "client": "link:@types/vite/client",
     "concurrently": "^9.1.2",
     "immer": "10.1.1",
     "install": "^0.13.0",
