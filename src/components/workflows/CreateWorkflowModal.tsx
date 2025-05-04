@@ -98,7 +98,8 @@ export default function CreateWorkflowModal({
         templateId,
         name: t("unnamedWorkflow"),
         departmentId: personalDepartment?.id ?? "",
-        index: 0
+        index: 0,
+        steps: [] // Add empty steps array as it's required by the Workflow type
       });
 
       if (!workflowId) {

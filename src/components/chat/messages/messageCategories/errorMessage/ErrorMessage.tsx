@@ -18,11 +18,9 @@ export function ErrorMessage({
   selectModel: (model: LlmName) => void;
 }) {
   const [errorCode, errorCodeDetails] = message.errorCode?.split(":") ?? [];
-
   const [editing, setEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(message.content);
-
-  const { guidelines } = useGuidelines();
+  const { accepted, lastUpdated } = useGuidelines();
 
   const onEditSafe = (newContent: string) => {
     if (
@@ -55,13 +53,13 @@ export function ErrorMessage({
               <ErrorMessageText
                 errorCode={errorCode}
                 errorCodeDetails={errorCodeDetails}
-                guidelines={guidelines}
+                guidelines={accepted ? lastUpdated : null}
                 message={message}
               />
               <ErrorMessageOptions
                 errorCode={errorCode}
                 errorCodeDetails={errorCodeDetails}
-                guidelines={guidelines}
+                guidelines={accepted ? lastUpdated : null}
                 message={message}
                 onEdit={onEdit}
                 selectModel={selectModel}

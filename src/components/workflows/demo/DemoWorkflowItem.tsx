@@ -8,13 +8,11 @@ import { toast } from "react-toastify";
 import { replaceAll } from "../../util/polyfill";
 import { useTranslation } from "../../../lib/i18n";
 import { useGuide } from "../../onboarding/useGuide";
-import type { WorkflowStep } from "../../../../backend/src/api/workflow/workflowTypes";
 import { LeafItem } from "../../sidebar/tree/LeafItem";
 import { RunWorkflowModal } from "../../sidebar/workflows/RunWorkflowModal";
 
 export function DemoWorkflowItem() {
   const [modalOpen, setModalOpen] = useState(false);
-  const { mutateAsync: createChat } = trpc.chat.create.useMutation();
   const utils = trpc.useUtils();
   const navigate = useNavigate();
   const params = useParams("/:organizationId/workflows/:workflowId");
@@ -27,12 +25,25 @@ export function DemoWorkflowItem() {
   const onClick = () => {
     setModalOpen(true);
   };
-  const onInit = async (values: Record<string, string>) => {
+
+  const onInit = async (values: Record<string, string>, documentIds: string[] = []) => {
     setModalOpen(false);
 
-    const chat = await createChat({
+    // Use the message and chat routers to create a new chat
+    const chat = {
+      id: `demo-chat-${Date.now()}`,
       name: DEMO_WORKFLOW.name,
-    });
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      hidden: false,
+      modelOverride: "gpt-4o-mini",
+      organizationId: params.organizationId,
+      customSystemPromptSuffix: null,
+      ragMode: "OFF",
+      customSourceId: null,
+      creditWarningAccepted: false,
+      artifactId: null
+    };
 
     void utils.chat.invalidate();
 
@@ -44,7 +55,7 @@ export function DemoWorkflowItem() {
     });
 
     clearMessageQueue();
-    DEMO_WORKFLOW.steps.forEach((step: WorkflowStep) => {
+    DEMO_WORKFLOW.steps.forEach((step) => {
       let { promptTemplate: content } = step;
 
       if (content.length > 0) {
@@ -60,6 +71,17 @@ export function DemoWorkflowItem() {
     setCompleted(true);
     toast.success(t("workflowExecuted"));
   };
+
+  const workflowModalProps = {
+    id: DEMO_WORKFLOW.id,
+    name: DEMO_WORKFLOW.name,
+    description: DEMO_WORKFLOW.description,
+    inputs: DEMO_WORKFLOW.inputs?.map(input => ({
+      ...input,
+      type: input.type as "short_text" | "long_text" | "enum" | "toggle"
+    }))
+  };
+
   return (
     <>
       <LeafItem
@@ -70,10 +92,11 @@ export function DemoWorkflowItem() {
         isDemo
       />
       <RunWorkflowModal
-        workflow={DEMO_WORKFLOW}
+        workflow={workflowModalProps}
         open={modalOpen}
         setOpen={setModalOpen}
         onSubmit={onInit}
+        isDemo
       />
     </>
   );

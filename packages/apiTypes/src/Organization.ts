@@ -1,5 +1,6 @@
 //  packages/apiTypes/src/Organization
 import * as z from "zod";
+import { ModelOverride } from "../../../backend/src/api/chat/chatTypes";
 
 export const ApiOrganization = z.object({
   id: z.string(),
@@ -7,7 +8,7 @@ export const ApiOrganization = z.object({
   domain: z.array(z.string()),
   isAcademyOnly: z.boolean(),
   customPrimaryColor: z.string(),
-  defaultModel: z.string(),
+  defaultModel: ModelOverride,
   tenantId: z.string(),
   defaultWorkshopId: z.string(),
   logoUrl: z.string(),
@@ -25,6 +26,7 @@ export const ApiOrganization = z.object({
   phaseStartDate: z.date().optional(),
   phaseEndDate: z.date().optional(),
   phaseStatus: z.enum(["ok", "expired", "creditsExhausted"]),
+  nonEuWarningSkippable: z.boolean().optional(),
 });
 
 

@@ -167,7 +167,7 @@ export function ModelCard({
   keyName: ModelOverride;
 }) {
   const { t } = useTranslation();
-  const meta: LlmMetaData | undefined = LLM_META[keyName];
+  const meta = keyName === "automatic" ? undefined : LLM_META[keyName];
   const primaryColor = usePrimaryColor();
   const block = (filled: boolean) => (
     <div
@@ -349,7 +349,7 @@ export function EnabledModelsSelector({
 }: MultiModelSelectorProps) {
   const organization = useOrganization();
   const defaultModel = organization?.defaultModel ?? null;
-  const selectModel = (key) => {
+  const selectModel = (key: ModelOverride) => {
     updateModel(key, !selectedModels.includes(key)).catch(() => {
       toast.error("errorDisplay.title");
     });

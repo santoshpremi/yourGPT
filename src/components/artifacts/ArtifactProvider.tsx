@@ -12,6 +12,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import ArtifactCanvas from "./ArtifactCanvas";
 import type { Artifact } from "../../../backend/src/api/chat/artifact/artifactTypes";
 
+// Update the Artifact type in ArtifactProvider.tsx
+
+
 interface ArtifactProviderMethods {
   visible: boolean;
   isLoading: boolean;
@@ -51,15 +54,15 @@ export const ArtifactProvider = ({
   const { mutateAsync: createVersion, isPending: createVersionLoading } =
     trpc.artifact.createVersion.useMutation();
 
-  const { data, isLoading: artifactLoading } =
-    trpc.artifact.getArtifact.useQuery({ chatId });
+const { data, isLoading: artifactLoading } =
+  trpc.artifact.getArtifact.useQuery({ chatId });
   const utils = trpc.useUtils();
 
   const isLoading = createVersionLoading || artifactLoading || loading;
 
   useEffect(() => {
     if (!data) return;
-    setArtifact(data);
+    setArtifact({ ...data, type: "defaultType" }); // Replace "defaultType" with the appropriate value for the type property
   }, [data]);
 
   const show = useCallback(
@@ -97,6 +100,7 @@ export const ArtifactProvider = ({
     },
     [setArtifact, artifact],
   );
+  
 
   const updateVersion = useCallback(
     ({ versionId, content }: { versionId: string; content: string }) => {
@@ -133,21 +137,30 @@ export const ArtifactProvider = ({
         highlightedText,
         feedback,
         context: context ?? undefined,
+        title: "",
+        content: "",
+        artifactId: ""
       });
 
       let newVersionId: string | undefined;
       try {
-        for await (const chunk of stream) {
-          if (chunk.type === "init") {
-            newVersionId = chunk.newVersionId;
-            addVersion(newVersionId);
-            continue;
-          }
+        if (Array.isArray(stream)) {
+          for (const chunk of stream) {
+            if (chunk.type === "init") {
+              newVersionId = chunk.newVersionId;
+              if (newVersionId) {
+                addVersion(newVersionId);
+              }
+              continue;
+            }
 
-          if (chunk.type === "chunk") {
-            const { chunk: content } = chunk;
-            updateVersion({ versionId: newVersionId!, content });
+            if (chunk.type === "chunk") {
+              const { chunk: content } = chunk;
+              updateVersion({ versionId: newVersionId!, content });
+            }
           }
+        } else {
+          console.error("Stream is not iterable:", stream);
         }
       } catch (error) {
         console.error("Failed to create new version:", error);

@@ -1,7 +1,19 @@
-import type { Department } from "../../../../backend/src/api/organization/department/departmentTypes.ts";
+import type { Department } from "../../../backend/src/api/organization/departmentTypes";
+
+// Define serialized types for TRPC layer
+type SerializedWorkflow = Omit<Department['workflows'][0], 'createdAt' | 'updatedAt'> & {
+  createdAt: string;
+  updatedAt: string;
+};
+
+type SerializedDepartment = Omit<Department, 'createdAt' | 'updatedAt' | 'workflows'> & {
+  createdAt: string;
+  updatedAt: string;
+  workflows: SerializedWorkflow[];
+};
 
 export function optimisticWorkflowReorder(
-  departments: Department[],
+  departments: SerializedDepartment[],
   workflowId: string,
   sourceDepartmentId: string,
   targetDepartmentId: string,

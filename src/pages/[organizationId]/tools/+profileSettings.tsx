@@ -35,7 +35,7 @@ export default function ProfileSettingsModal() {
     firstName === "" ||
     lastName === "";
 
-  const onSubmit = async (e) => {
+  const onSubmit = async (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     console.log("submitting");
     setLoading(true);

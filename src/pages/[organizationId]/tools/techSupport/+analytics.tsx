@@ -13,10 +13,23 @@ import { endOfDay, format, parseISO, startOfDay, subDays } from "date-fns";
 import { de, enUS, es, fr, it } from "date-fns/locale";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import LocalizedDateRangePicker from "../../../../components/input/LocalizedDateRangePicker.tsx";
-import { trpc } from "../../../../lib/api/trpc/trpc.ts";
-import { TrpcProvider } from "../../../../lib/api/trpc/TrpcProvider.tsx";
-import { useModals } from "../../../../router.ts";
+import LocalizedDateRangePicker from "../../../../components/input/LocalizedDateRangePicker";
+import { trpc } from "../../../../lib/api/trpc/trpc";
+import { TrpcProvider } from "../../../../lib/api/trpc/TrpcProvider";
+import { useModals } from "../../../../router";
+
+interface TechSupportAnalytics {
+  totalRequests: number;
+  totalIssuesSolved: number;
+  unknownOutcome: number;
+  totalTicketsCreated: number;
+  solvedRequestsByDay: Array<{
+    day: string;
+    solved_requests: number;
+    tickets_created: number;
+    unknown_outcome: number;
+  }>;
+}
 
 function getLocale(key: string) {
   const locale = {

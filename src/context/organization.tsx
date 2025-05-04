@@ -33,11 +33,14 @@ export function OrganizationProvider({
   // Validate organization data against Zod schema
   const validatedOrg = data ? ApiOrganization.safeParse(data) : null;
 
-  const value = {
+  const value: OrganizationContextType = {
     organization: validatedOrg?.success ? validatedOrg.data : null,
     loading: isLoading,
-    error:
-      error || (validatedOrg?.success === false ? validatedOrg.error : null),
+    error: error 
+      ? new Error(error.message) 
+      : (validatedOrg?.success === false 
+        ? new Error(validatedOrg.error.message) 
+        : null),
     refetch,
   };
 

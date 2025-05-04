@@ -2,9 +2,9 @@
 import { trpc } from "./trpc/trpc";
 
 export const useGuidelines = () => {
-  const { guidelines, guidelinesLastUpdate } =
+  const { accepted, lastUpdated } =
     trpc.usageGuidelines.getGuidelines.useQuery().data ?? {};
-  const mutateGuidelines =
-    trpc.usageGuidelines.mutateGuidelines.useMutation().mutateAsync;
-  return { guidelines, guidelinesLastUpdate, mutateGuidelines };
+  const updateGuidelines =
+    trpc.usageGuidelines.updateGuidelines.useMutation().mutateAsync;
+  return { accepted, lastUpdated, updateGuidelines };
 };

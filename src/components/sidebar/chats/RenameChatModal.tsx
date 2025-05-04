@@ -15,8 +15,8 @@ import type {
   ChatSearchResult,
 } from "../../../../backend/src/api/chat/chatTypes";
 import { trpc } from "../../../lib/api/trpc/trpc";
-import z from "zod";
 import { handleGenericError } from "../../../lib/errorHandling";
+import z from "zod";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { Form, Formik } from "formik";
 
@@ -35,7 +35,7 @@ export function RenameChatModal({
   onClose: () => void;
 }) {
   const { t } = useTranslation();
-  const { mutateAsync: renameChat } = trpc.chat.rename.useMutation();
+  const { mutateAsync: renameChat } = trpc.chat.adjustChatTitle.useMutation();
 
   const utils = trpc.useUtils();
 
@@ -49,8 +49,9 @@ export function RenameChatModal({
       onClose();
     } catch (e) {
       handleGenericError(
-        e instanceof Error ? e : new Error("rename chat", { cause: e }),
-        "rename chat",
+        e instanceof Error ? e : new Error("rename chat"),
+        undefined,
+        { source: "rename_chat" },
       );
     }
   }

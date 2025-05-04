@@ -6,15 +6,24 @@ import {
   ApiPatchOrganization,
 } from "../../packages/apiTypes/src/Organization.js";
 import { KnowledgeCollection } from "./api/rag/dataPool/dataPoolTypes.js";
-import { ChatInfiniteQueryResultSchema, ChatListItem } from "../../backend/src/api/chat/chatTypes.js";
-import { de } from "date-fns/locale.js";
+import {
+  ChatInfiniteQueryResultSchema,
+  ChatListItem,
+} from "../../backend/src/api/chat/chatTypes.js";
+import { de, hi } from "date-fns/locale.js";
 import { p } from "react-router/dist/development/fog-of-war-Cm1iXIp7.js";
-import {  Workflow, WorkflowCreateInput, WorkflowUpdateInput, WorkflowGetAllInput } from "./api/workflow/workflowTypes";
+import {
+  Workflow,
+  WorkflowCreateInput,
+  WorkflowUpdateInput,
+  WorkflowGetAllInput,
+} from "./api/workflow/workflowTypes";
 import { Department } from "./api/organization/departmentTypes";
-
-
+import { get } from "lodash";
+import type { Message } from "./api/chat/message/messageTypes.js";
+import { response } from "express";
+import { ModelOverride } from "./api/chat/chatTypes.js";
 export const t = initTRPC.create();
-
 
 const mockWorkflows: Workflow[] = [
   {
@@ -24,8 +33,16 @@ const mockWorkflows: Workflow[] = [
     index: 0,
     departmentId: "dept-1",
     createdAt: new Date(),
-    updatedAt: new Date()
-  }
+    updatedAt: new Date(),
+    steps: [
+      {
+        id: "step-1",
+        order: 0,
+        promptTemplate: "Welcome to the onboarding process!",
+        modelOverride: null,
+      },
+    ],
+  },
 ];
 // Mock data storage
 const mockData = {
@@ -42,28 +59,29 @@ const mockData = {
     avatarUrl: "",
     phaseStatus: "ok",
     customTitle: "My Organization",
-    banners: [{
-    id: "welcome-banner",
-    content: "Welcome to ou!",
-    type: "success"
-    }],
+    banners: [
+      {
+        id: "welcome-banner",
+        content: "Welcome to ou!",
+        type: "success",
+      },
+    ],
     phaseUsageStatus: "ok",
     phaseUsageEnd: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 2 months from now
     phaseUsageStart: new Date(),
-    phaseUsageDuration: 60, 
+    phaseUsageDuration: 60,
     phase: "TRIAL",
     phaseStartDate: new Date(),
     phaseEndDate: new Date(Date.now() + 60 * 86400000), // 60 days from now
-    
   }),
-  
+
   guidelines: {
-    content: "Sample usage guidelines text..."
+    content: "Sample usage guidelines text...",
   },
-  
+
   contactInfo: {
     email: "sales@deingpt.com",
-    phone: "+1-555-123-4567"
+    phone: "+1-555-123-4567",
   },
   productConfig: {
     imageGeneration: true,
@@ -80,38 +98,37 @@ const mockData = {
     enableRagAcademy: true,
   },
   tools: {
-    images:{
+    images: {
       enabled: true,
-      configuredModels: ["model1", "model2"]
+      configuredModels: ["model1", "model2"],
     },
     researchAssistant: {
       enabled: true,
-      configuredModels: ["model3"]
+      configuredModels: ["model3"],
     },
     meetingTools: {
       enabled: true,
-      configuredModels: ["gemini-1.5-pro"]
+      configuredModels: ["gemini-1.5-pro"],
     },
     techSupport: {
       enabled: true,
-      configuredModels: ["model4"]
+      configuredModels: ["model4"],
     },
     translateContent: {
       textTranslator: {
         enabled: true,
-        configuredModels: ["model5"]
+        configuredModels: ["model5"],
       },
       documentTranslator: {
         enabled: true,
-        configuredModels: ["model6"]      
-  }
+        configuredModels: ["model6"],
+      },
+    },
+    documentIntelligence: {
+      enabled: true,
+      configuredModels: ["model7"],
+    },
   },
-  documentIntelligence: {
-    enabled: true,
-    configuredModels: ["model7"]
-  },
-
-  },  
 };
 
 // Organization Metrics Router
@@ -119,17 +136,14 @@ const organizationMetricsRouter = t.router({
   getPhaseAnalytics: t.procedure.query(() => ({
     numPrompts: 200,
     totalMinutesSaved: 500,
-    numWorkflowRuns: 38
-  }))
+    numWorkflowRuns: 38,
+  })),
 });
-
 
 // Add to organization router
 const organizationRouter = t.router({
   department: t.router({
-    all: t.procedure
-      .output(z.array(Department))
-      .query(() => []), // Implement your actual query
+    all: t.procedure.output(z.array(Department)).query(() => []), // Implement your actual query
   }),
 });
 // Workflows Router
@@ -139,31 +153,29 @@ const workflowsRouter = t.router({
     .input(WorkflowGetAllInput)
     .output(z.array(Workflow))
     .query(({ input }) => {
-
       if (!input || !input.departmentId) {
         return mockWorkflows;
       }
-      return mockWorkflows.filter((w: Workflow) => 
-        w.departmentId === input.departmentId
+      return mockWorkflows.filter(
+        (w: Workflow) => w.departmentId === input.departmentId
       );
     }),
-  
+
   create: t.procedure
     .input(WorkflowCreateInput)
     .mutation(() => "new-workflow-id"),
-  
-  update: t.procedure
-    .input(WorkflowUpdateInput)
-    .mutation(({ input }) => input),
 
+  update: t.procedure.input(WorkflowUpdateInput).mutation(({ input }) => input),
 
-  favorites: t.procedure
-    .output(z.array(Workflow))
-    .query(() => []), 
+  favorites: t.procedure.output(z.array(Workflow)).query(() => []),
 
   getTemplates: t.procedure
     .input(z.object({ language: z.enum(["en", "de"]) }))
-    .output(z.array(z.object({ id: z.string(), name: z.string(), description: z.string() }))) 
+    .output(
+      z.array(
+        z.object({ id: z.string(), name: z.string(), description: z.string() })
+      )
+    )
     .query(({ input }) => {
       const templates = [
         { id: "template-1", name: "Template 1", description: "Description 1" },
@@ -172,7 +184,7 @@ const workflowsRouter = t.router({
       return input.language === "de" ? templates : templates;
     }),
 
-    wizard : t.procedure
+  wizard: t.procedure
     .input(z.object({ language: z.enum(["en", "de"]), query: z.string() }))
     .mutation(async ({ input }) => {
       const workflow = {
@@ -184,95 +196,147 @@ const workflowsRouter = t.router({
       return workflow;
     }),
 
-
-
-    
   toggleFavorite: t.procedure
     .input(z.object({ workflow: z.object({ id: z.string() }) }))
     .mutation(() => true),
-    
+
   updateDepartmentAndPosition: t.procedure
-    .input(z.object({
-      workflow: z.object({
-        id: z.string(),
-        departmentId: z.string(),
-        index: z.number()
-      }),
-      sourceDepartmentId: z.string()
-    }))
+    .input(
+      z.object({
+        workflow: z.object({
+          id: z.string(),
+          departmentId: z.string(),
+          index: z.number(),
+        }),
+        sourceDepartmentId: z.string(),
+      })
+    )
     .mutation(() => true),
-    
 });
 
-
 // Usage Guidelines Router
-const usageGuidelinesRouter =  t.router({
-    getGuidelines: t.procedure
-      .input(z.void())
-      .output(z.object({
+const usageGuidelinesRouter = t.router({
+  getGuidelines: t.procedure
+    .input(z.void())
+    .output(
+      z.object({
         accepted: z.boolean(),
-        lastUpdated: z.date()
-      }))
-      .query(() => ({
-        accepted: true,
-        lastUpdated: new Date()
-      }))
-  })
+        lastUpdated: z.date(),
+      })
+    )
+    .query(() => ({
+      accepted: true,
+      lastUpdated: new Date(),
+    })),
+    
+  updateGuidelines: t.procedure
+    .input(z.object({ accepted: z.boolean() }))
+    .mutation(async ({ input }) => {
+      // In a real implementation, you would save this to a database
+      return input;
+    }),
+});
 // Contact Info Router
 const contactInfoRouter = t.router({
   getOrganizationContactInfo: t.procedure
     .input(z.void())
-    .query(() => mockData.contactInfo)
+    .query(() => mockData.contactInfo),
 });
-
 
 // productConfig Router
 const productConfigRouter = t.router({
   getProductConfig: t.procedure
     .input(z.void())
-    .query(() => mockData.productConfig)
+    .query(() => mockData.productConfig),
 });
 
 // Add ModelConfig router
 const modelConfigRouter = t.router({
   getEnabled: t.procedure
     .input(z.void())
-    .query(() => ["sonar", "gemini-1.5-pro"] as const)
+    .query(() => [
+      "sonar",
+      "gemini-1.5-pro",
+      "gpt-4o-mini",
+      "sonar-deep-research",
+      "gpt-4o",
+      "o1-us",
+      "o3-mini",
+      "claude-3-7-sonnet",
+      "claude-3-7-sonnet-thinking",
+      "gemini-2.0-flash",
+      "llama-3.3-fast",
+      "deepseek-v3",
+      "deepseek-r1"
+    ] as const),
 });
 // Tools Router
 const toolsRouter = t.router({
   images: t.router({
     listConfigured: t.procedure
       .input(z.void())
-      .query(() => mockData.tools.images.configuredModels)
+      .query(() => mockData.tools.images.configuredModels),
   }),
   modelConfig: modelConfigRouter,
   translateContent: t.router({
     textTranslator: t.router({
       isEnabled: t.procedure
         .input(z.void())
-        .query(() => mockData.tools.translateContent.textTranslator.enabled)
+        .query(() => mockData.tools.translateContent.textTranslator.enabled),
     }),
     documentTranslator: t.router({
       isEnabled: t.procedure
         .input(z.void())
-        .query(() => mockData.tools.translateContent.documentTranslator.enabled)
-    })
+        .query(
+          () => mockData.tools.translateContent.documentTranslator.enabled
+        ),
+    }),
   }),
   techSupport: t.router({
     isEnabled: t.procedure
       .input(z.void())
-      .query(() => mockData.tools.techSupport.enabled)
+      .query(() => mockData.tools.techSupport.enabled),
+    getAnalytics: t.procedure
+      .input(z.object({
+        from: z.string(),
+        to: z.string()
+      }))
+      .output(z.object({
+        totalRequests: z.number(),
+        totalIssuesSolved: z.number(),
+        unknownOutcome: z.number(),
+        totalTicketsCreated: z.number(),
+        solvedRequestsByDay: z.array(z.object({
+          day: z.string(),
+          solved_requests: z.number(),
+          tickets_created: z.number(),
+          unknown_outcome: z.number()
+        }))
+      }))
+      .query(() => ({
+        totalRequests: 100,
+        totalIssuesSolved: 75,
+        unknownOutcome: 15,
+        totalTicketsCreated: 10,
+        solvedRequestsByDay: [
+          {
+            day: new Date().toISOString(),
+            solved_requests: 75,
+            tickets_created: 10,
+            unknown_outcome: 15
+          }
+        ]
+      }))
   }),
   meetingTools: t.router({
     listConfigured: t.procedure
       .input(z.void())
-      .query(() => mockData.tools.meetingTools.configuredModels)
+      .query(() => mockData.tools.meetingTools.configuredModels),
   }),
   documentIntelligence: t.router({
     isEnabled: t.procedure
       .input(z.void())
-      .query(() => mockData.tools.documentIntelligence.enabled)
+      .query(() => mockData.tools.documentIntelligence.enabled),
   }),
 });
 
@@ -291,21 +355,65 @@ const ragRouter = t.router({
   }),
 });
 
-
-// Add chat router 
+// Add chat router
 const chatRouter = t.router({
-  setRagMode: t.procedure
-    .input(z.object({
+  adjustChatTitle: t.procedure
+    .input(z.object({ 
       chatId: z.string(),
-      ragMode: z.enum(["OFF", "AUTO", "CUSTOM"]),
-      customSourceId: z.string().optional(),
+      name: z.string()
     }))
+    .mutation(async ({ input }) => {
+      // Your mutation logic here
+      return { success: true };
+    }),
+
+  setModelOverride: t.procedure
+    .input(
+      z.object({
+        chatId: z.string(),
+        modelOverride: z.string().nullable(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Your mutation logic here
+      return { success: true };
+    }),
+
+  get: t.procedure
+    .input(z.object({ chatId: z.string() }))
+    .query(async ({ input }) => {
+      // Your query logic here
+      return {
+        id: input.chatId,
+        name: "Sample Chat",
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        hidden: false,
+        modelOverride: "gpt-4o-mini" as ModelOverride,
+        organizationId: "org-1",
+        customSystemPromptSuffix: null,
+        ragMode: "OFF" as const,
+        customSourceId: null,
+        creditWarningAccepted: false,
+        organisationDefaultModel: "gpt-4",
+      };
+    }),
+  setRagMode: t.procedure
+    .input(
+      z.object({
+        chatId: z.string(),
+        ragMode: z.enum(["OFF", "AUTO", "CUSTOM"]),
+        customSourceId: z.string().optional(),
+      })
+    )
     .mutation(() => true),
   getAll: t.procedure
-    .input(z.object({
-      limit: z.number().min(1).max(100),
-      cursor: z.string().optional(),
-    }))
+    .input(
+      z.object({
+        limit: z.number().min(1).max(100),
+        cursor: z.string().optional(),
+      })
+    )
     .output(ChatInfiniteQueryResultSchema)
     .query(({ input }) => ({
       items: [
@@ -314,11 +422,25 @@ const chatRouter = t.router({
           name: "Sample Chat",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          organizationId: "org-123"
-        }
-      ] as ChatListItem[],
-      nextCursor: undefined
-    }))
+          modelOverride: "gpt-4",
+          organisationDefaultModel: "gpt-4",
+          ragMode: "OFF",
+          creditWarningAccepted: false,
+        },
+      ] as unknown as ChatListItem[],
+      nextCursor: undefined,
+    })),
+  acceptCreditWarning: t.procedure
+    .input(z.object({ chatId: z.string() }))
+    .mutation(async () => {
+      return { success: true };
+    }),
+  delete: t.procedure
+    .input(z.object({ chatId: z.string() }))
+    .mutation(async ({ input }) => {
+      // Your delete logic here would normally delete from a database
+      return { success: true };
+    }),
 });
 
 // Department Router
@@ -326,11 +448,117 @@ const departmentRouter = t.router({
   personal: t.router({
     get: t.procedure
       .input(z.void())
-      .query(() => ({ id: "Personal department data" }))
-  })
+      .query(() => ({ id: "Personal department data" })),
+  }),
 });
 
+
+
+const messageRouter = t.router({
+  postMessageAndRequestResponse: t.procedure
+    .input(
+      z.object({
+        content: z.string(),
+        language: z.string(),
+        attachmentIds: z.array(z.string()).optional(),
+        customSystemPromptSuffix: z.string().optional(),
+        temperature: z.number().optional(),
+        chatId: z.string(),
+        modelOverride: z.string().optional(),
+        outputFormat: z.string().optional(),
+        workflowExecutionId: z.string().optional(),
+      })
+    )
+    .mutation(async function* ({ input }) {
+      yield {
+        type: "init",
+        aiMessageId: "msg-1",
+        generationModel: "gpt-4o-mini" as const,
+      };
+      yield {
+        type: "chunk",
+        delta: "Sample response",
+        content: "Sample response",
+        citations: [],
+      };
+    }),
+
+  abortMessageResponse: t.procedure
+    .input(
+      z.object({
+        chatId: z.string(),
+        messageId: z.string(),
+        receivedContent: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // Your mutation logic here
+      return { success: true };
+    }),
+
+  getMessagesForChat: t.procedure
+    .input(z.object({ chatId: z.string() }))
+    .query(async ({ input }) => {
+      return [
+        {
+          id: "message-1",
+          content: "Sample message",
+          chatId: input.chatId,
+          createdAt: new Date().toISOString(),
+          fromAi: false,
+          responseCompleted: true,
+          authorId: null,
+          generationModel: "gemini-1.5-pro" as const,
+          attachmentIds: [] as string[],
+          citations: [] as string[],
+          artifactVersionId: null,
+          cancelled: false,
+          ragSources: [] as any[],
+          tokens: 0,
+          outputDocumentUrl: null,
+          errorCode: null
+        },
+      ];
+    }),
+});
+
+
+
+
+
+
+
 export const appRouter = t.router({
+  apiKeys: t.router({
+    enabled: t.procedure
+      .query(() => true),
+    list: t.procedure
+      .query(() => {
+        return [
+          {
+            id: "key1",
+            displayName: "Test Key",
+            createdAt: new Date(),
+          }
+        ];
+      }),
+    create: t.procedure
+      .input(z.object({ displayName: z.string() }))
+      .mutation(async ({ input }) => {
+        return {
+          id: `key_${Date.now()}`,
+          displayName: input.displayName,
+          key: `sk_test_${Math.random().toString(36).slice(2)}`,
+          createdAt: new Date()
+        };
+      }),
+    delete: t.procedure
+      .input(z.object({ id: z.string() }))
+      .mutation(async ({ input }) => {
+        // Mock delete operation
+        return true;
+      }),
+  }),
   organization: t.router({
     getOrganization: t.procedure
       .input(z.void())
@@ -351,11 +579,42 @@ export const appRouter = t.router({
       .input(z.void())
       .query(() => [mockData.organization]),
 
-    department: departmentRouter
+    department: departmentRouter,
   }),
 
-
   artifact: t.router({
+    getArtifact: t.procedure
+      .input(z.object({ chatId: z.string() }))
+      .output(
+        z.object({
+          id: z.string(),
+          title: z.string(),
+          content: z.string(),
+          versions: z.array(
+            z.object({
+              id: z.string(),
+              content: z.string(),
+              createdAt: z.date(),
+              fromChat: z.boolean(),
+              version: z.number(),
+            })
+          ),
+        })
+      )
+      .query(({ input }) => ({
+        id: input.chatId,
+        title: "Sample Artifact",
+        content: "Sample content",
+        versions: [
+          {
+            id: "version-1",
+            content: "Version 1 content",
+            createdAt: new Date(),
+            fromChat: false,
+            version: 1,
+          },
+        ],
+      })),
     getVersion: t.procedure
       .input(z.object({ id: z.string() }))
       .output(
@@ -376,16 +635,38 @@ export const appRouter = t.router({
           createdAt: new Date(),
         },
       })),
+    createVersion: t.procedure
+      .input(
+        z.object({
+          artifactId: z.string(),
+          content: z.string(),
+          title: z.string(),
+          chatId: z.string(),
+          baseVersionId: z.string().optional(),
+          highlightedText: z.string().optional(),
+          feedback: z.string().optional(),
+          context: z.string().optional(),
+          
+        })
+      )
+      .output(
+        z.object({
+          success: z.boolean(),
+          versionId: z.string(),
+        })
+      )
+      .mutation(async ({ input }) => {
+        // Your mutation logic here
+        return { success: true, versionId: "new-id" };
+      }),
   }),
 
   trial: t.router({
-    check: t.procedure.query(() => ({ 
+    check: t.procedure.query(() => ({
       status: "ok",
-      trialEnd: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000) // 2 months from now
-    }))
+      trialEnd: new Date(Date.now() + 60 * 24 * 60 * 60 * 1000), // 2 months from now
+    })),
   }),
-
-  
 
   organizationMetrics: organizationMetricsRouter,
   organizational: organizationRouter,
@@ -398,10 +679,8 @@ export const appRouter = t.router({
   department: departmentRouter,
   rag: ragRouter,
   chat: chatRouter,
+  message: messageRouter,
   // Add other routers he
 });
-
-
-
 
 export type AppRouter = typeof appRouter;

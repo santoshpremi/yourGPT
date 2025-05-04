@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import resolveConfig from "tailwindcss/resolveConfig";
-import tailwindConfig from "../../../tailwind.config.ts";
+import tailwindConfig from "../../../tailwind.config";
 
 export type Breakpoint = "sm" | "md" | "lg" | "xl" | "2xl";
 

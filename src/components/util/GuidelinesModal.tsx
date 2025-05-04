@@ -14,13 +14,13 @@ export function GuidelinesModal({
   isOpen: boolean;
   onClose: () => void;
 }) {
-  const { guidelines, guidelinesLastUpdate } = useGuidelines();
+  const { accepted, lastUpdated } = useGuidelines();
 
   const { t, i18n } = useTranslation();
 
   const me = useMe();
 
-  if (!me || !guidelines || !guidelinesLastUpdate) return null;
+  if (!me || !accepted || !lastUpdated) return null;
 
   return (
     <Modal open={isOpen} disableEscapeKeyDown>
@@ -41,12 +41,12 @@ export function GuidelinesModal({
         <Card>
           <MarkdownRenderer
             content={
-              guidelines +
+              accepted +
               "\n\n" +
               t("lastUpdated") +
-              new Date(guidelinesLastUpdate).toLocaleDateString(i18n.language) +
+              new Date(lastUpdated).toLocaleDateString(i18n.language) +
               " " +
-              (new Date(guidelinesLastUpdate).toLocaleTimeString(
+              (new Date(lastUpdated).toLocaleTimeString(
                 i18n.language,
               ) ?? "")
             }

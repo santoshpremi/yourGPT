@@ -17,17 +17,19 @@ import {
 
 import { useTranslation } from "../../../lib/i18n";
 
+interface LeafItemDropdownProps {
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onToggleFavorite?: () => void;
+  isFavorite?: boolean;
+}
+
 export function LeafItemDropdown({
   onEdit,
   onDelete,
   onToggleFavorite,
   isFavorite,
-}: {
-  onEdit?;
-  onDelete?: () => void;
-  onToggleFavorite?: () => void;
-  isFavorite?: boolean;
-}) {
+}: LeafItemDropdownProps) {
   const { t } = useTranslation();
 
   return (

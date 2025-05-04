@@ -27,11 +27,15 @@ export function DataPoolChip({
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
 
-  const knowledgeCollection = trpc.rag.dataPools.get.useQuery({
-    id,
-  });
+  const knowledgeCollections = trpc.rag.dataPools.getAll.useQuery();
 
-  if (!knowledgeCollection.data || knowledgeCollection.error) {
+  if (!knowledgeCollections.data || knowledgeCollections.error) {
+    return null;
+  }
+
+  const knowledgeCollection = knowledgeCollections.data.find((pool) => pool.id === id);
+
+  if (!knowledgeCollection) {
     return null;
   }
 
@@ -54,7 +58,7 @@ export function DataPoolChip({
         <ModalDialog className="overflow-hidden" maxWidth="lg">
           <ModalClose />
           <Typography level="h4" fontStyle="bold">
-            {knowledgeCollection.data.name}
+            {knowledgeCollection.name}
           </Typography>
           <div className="overflow-y-auto overflow-x-hidden px-2">
             {results.queries &&
@@ -125,7 +129,7 @@ export function DataPoolChip({
         startDecorator={<TextSnippetIcon color="primary" />}
         onClick={() => results.queries != null && setOpen(true)}
       >
-        {knowledgeCollection.data.name}
+        {knowledgeCollection.name}
         {results.queries &&
           ` (${t("knowledgeBase.results", { count: numResults })})`}
       </Chip>

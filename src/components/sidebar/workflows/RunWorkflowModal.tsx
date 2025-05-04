@@ -21,17 +21,40 @@ import { Form } from "react-router";
 import { useTranslation } from "../../../lib/i18n";
 import { trpc } from "../../../lib/api/trpc/trpc";
 import { useGuide } from "../../onboarding/useGuide";
-import type {
-  Workflow,
-  WorkflowInput,
-} from "../../../../backend/src/api/workflow/workflowTypes.ts";
 import {
   CODE_MIME_TYPE_TO_EXTENSIONS_MAP,
   MIME_TYPE_TO_EXTENSIONS_MAP,
   mergeMimeMaps,
-} from "../../../../backend/src/constants/mime.ts";
-import { DocumentDropzone } from "../../util/DocumentDropzone.tsx";
-import { MarkdownRenderer } from "../../chat/markdown/MarkdownRenderer.tsx";
+} from "../../../../backend/src/constants/mime";
+import { DocumentDropzone } from "../../util/DocumentDropzone";
+import { MarkdownRenderer } from "../../chat/markdown/MarkdownRenderer";
+
+interface WorkflowOption {
+  label: string;
+  value: string;
+}
+
+interface WorkflowInput {
+  key: string;
+  name: string;
+  type: "short_text" | "long_text" | "enum" | "toggle";
+  placeholder?: string;
+  options: WorkflowOption[];
+}
+
+interface RunWorkflowModalProps {
+  workflow: {
+    id: string;
+    name: string;
+    description?: string;
+    inputs?: WorkflowInput[];
+    allowDocumentUpload?: boolean;
+  };
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  onSubmit: (values: Record<string, string>, documentIds: string[]) => void;
+  isDemo?: boolean;
+}
 
 export function RunWorkflowModal({
   workflow,
@@ -39,13 +62,7 @@ export function RunWorkflowModal({
   setOpen,
   onSubmit,
   isDemo,
-}: {
-  workflow: Workflow;
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  onSubmit: (values: Record<string, string>, documentIds: string[]) => void;
-  isDemo?: boolean;
-}) {
+}: RunWorkflowModalProps) {
   const { t } = useTranslation();
 
   const [values, setValues] = useState<Record<string, string>>({});
@@ -143,7 +160,6 @@ export function WorkflowInputField({
   onChange: (value: string) => void;
 }) {
   const [fieldVisible, setFieldVisible] = useState<boolean>(false);
-
   const { t } = useTranslation();
 
   if (input.type === "short_text")
@@ -192,7 +208,7 @@ export function WorkflowInputField({
             }}
             value={fieldVisible ? "custom-input" : value}
           >
-            {input.options.map((option) => (
+            {input.options.map((option: WorkflowOption) => (
               <Option value={option.value} key={option.value + option.label}>
                 {option.label}
               </Option>
@@ -219,26 +235,27 @@ export function WorkflowInputField({
 
   if (input.type === "toggle") {
     let options = input.options;
-    if (options.length != 2) {
+    if (options.length !== 2) {
       options = [
         { label: t("on"), value: "on" },
         { label: t("off"), value: "off" },
       ];
     }
 
-    options = options.map((option) => ({
+    options = options.map((option: WorkflowOption) => ({
       ...option,
       value: option.value === "" ? " " : option.value,
-    })); // Empty string is not a valid value for a select
+    }));
 
     if (value === undefined || value === null) {
       onChange(options[1].value);
     }
+
     return (
       <FormControl>
         <FormLabel>{input.name}</FormLabel>
         <ButtonGroup>
-          {options.map((state) => (
+          {options.map((state: WorkflowOption) => (
             <Button
               variant={state.value === value ? "solid" : "soft"}
               color={state.value === value ? "primary" : "neutral"}
@@ -254,4 +271,6 @@ export function WorkflowInputField({
       </FormControl>
     );
   }
+
+  return null;
 }

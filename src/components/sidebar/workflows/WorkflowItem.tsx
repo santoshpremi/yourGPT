@@ -2,18 +2,42 @@ import { PlayCircleOutline } from "@mui/icons-material";
 import { skipToken } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "react-toastify";
-import { type WorkflowStep } from "../../../../backend/src/api/workflow/workflowTypes";
 import { trpc } from "../../../lib/api/trpc/trpc";
 import { useQueuedMessagesStore } from "../../../lib/context/queuedMessagesStore";
 import { handleGenericError } from "../../../lib/errorHandling";
 import { useTranslation } from "../../../lib/i18n";
 import { useNavigate, useParams } from "../../../router";
 import { replaceAll } from "../../util/polyfill";
-import { RunWorkflowModal } from "./RunWorkflowModal.tsx";
-import { type ModelOverride } from "../../../../backend/src/api/chat/chatTypes.ts";
-import { LeafItemDropdown } from "../tree/LeafItemDropdown.tsx";
-import { LeafItem } from "../tree/LeafItem.tsx";
-import { ConfirmModal } from "../tree/ConfirmModal.tsx";
+import { RunWorkflowModal } from "./RunWorkflowModal";
+import type { ModelOverride } from "../../../../backend/src/api/chat/chatTypes";
+import type { WorkflowStep, Workflow, WorkflowInput } from "../../../../backend/src/api/workflow/workflowTypes";
+import { LeafItemDropdown } from "../tree/LeafItemDropdown";
+import { LeafItem } from "../tree/LeafItem";
+import { ConfirmModal } from "../tree/ConfirmModal";
+
+interface Document {
+  id: string;
+}
+
+type WorkflowInputType = "short_text" | "long_text" | "enum" | "toggle";
+
+interface WorkflowOption {
+  value: string;
+  label: string;
+}
+
+interface SimpleWorkflow {
+  id: string;
+  name: string;
+  description?: string;
+  inputs?: Array<{
+    key: string;
+    name: string;
+    type: WorkflowInputType;
+    options: WorkflowOption[];
+  }>;
+  allowDocumentUpload?: boolean;
+}
 
 export function WorkflowItem({
   workflowId,
@@ -29,29 +53,24 @@ export function WorkflowItem({
   const navigate = useNavigate();
   const params = useParams("/:organizationId/workflows/:workflowId");
 
-  const { data: workflow } = trpc.workflows.getById.useQuery({
-    workflow: { id: workflowId },
-  });
-  const { data: department } = trpc.organization.department.byId.useQuery(
-    workflow?.departmentId
-      ? {
-          departmentId: workflow?.departmentId,
-        }
-      : skipToken,
-  );
+  const { data: workflows } = trpc.workflows.getAll.useQuery({ departmentId: workflowId });
+  const workflow = workflows?.find(w => w.id === workflowId);
+  
+  const { data: department } = trpc.department.personal.get.useQuery();
 
-  const { mutateAsync: deleteWorkflow } = trpc.workflows.delete.useMutation();
-  const { mutateAsync: createChat } = trpc.chat.create.useMutation();
-  const { mutateAsync: toggleFavorite } =
-    trpc.workflows.toggleFavorite.useMutation();
+  // Update instead of delete - we'll mark as inactive by setting index to -1
+  const { mutateAsync: deleteWorkflow } = trpc.workflows.update.useMutation();
+  const { mutateAsync: createChat } = trpc.chat.adjustChatTitle.useMutation();
+  const { mutateAsync: toggleFavorite } = trpc.workflows.toggleFavorite.useMutation();
 
   const isSelected = params.workflowId === workflowId;
 
   const onDelete = async () => {
     await deleteWorkflow({
-      workflow: { id: workflowId },
+      id: workflowId,
+      index: -1 // Mark as inactive
     });
-    await utils.organization.department.invalidate();
+    await utils.department.invalidate();
     await utils.workflows.invalidate();
 
     toast.success(t("workflowDeleted"));
@@ -72,12 +91,12 @@ export function WorkflowItem({
 
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
 
-  const { mutateAsync: trackUsage } =
-    trpc.workflows.trackWorkflowExecution.useMutation();
+  // Use update to track execution
+  const { mutateAsync: trackUsage } = trpc.workflows.update.useMutation();
   const enqueueMessage = useQueuedMessagesStore((s) => s.addQueuedMessage);
   const clearMessageQueue = useQueuedMessagesStore((s) => s.clear);
 
-  if (!workflow) return;
+  if (!workflow) return null;
 
   const hasSteps = workflow.steps.length > 0;
 
@@ -90,74 +109,72 @@ export function WorkflowItem({
     attachmentIds = [
       ...new Set([
         ...attachmentIds,
-        ...(workflow.includedDocuments ?? []).map((doc) => doc.id),
+        ...(workflow.includedDocuments ?? []).map((doc: Document) => doc.id),
       ]),
     ];
 
-    const chat = await createChat({
-      name: workflow.name,
-      modelOverride: workflow.modelOverride,
+    const chatId = `new-chat-${Date.now()}`;
+    // Create chat through adjustChatTitle
+    await createChat({ 
+      chatId,
+      name: workflow.name // Add the workflow name as the initial chat name
     });
 
     void utils.chat.invalidate();
 
-    const { workflowExecutionId } = await trackUsage({
-      workflow: { id: workflowId },
-    }).catch((error) => {
-      console.error(error);
-      return { workflowExecutionId: undefined };
-    });
+    try {
+      // Track execution by updating last execution date
+      await trackUsage({
+        id: workflowId,
+        updatedAt: new Date()
+      });
 
-    console.log(params.organizationId);
-    console.log(chat.id);
-    void navigate("/:organizationId/chats/:chatId", {
-      params: {
-        organizationId: params.organizationId,
-        chatId: chat.id,
-      },
-    });
+      void navigate("/:organizationId/chats/:chatId", {
+        params: {
+          organizationId: params.organizationId,
+          chatId
+        },
+      });
 
-    let modelOverride: ModelOverride | undefined | null;
-    if (hasSteps) {
-      clearMessageQueue();
-      workflow.steps.forEach((step: WorkflowStep, index: number) => {
-        let { promptTemplate: content } = step;
-        modelOverride = step.modelOverride;
+      let modelOverride: ModelOverride | undefined | null;
+      if (hasSteps) {
+        clearMessageQueue();
+        workflow.steps.forEach((step: WorkflowStep) => {
+          let { promptTemplate: content } = step;
+          modelOverride = step.modelOverride as ModelOverride | null;
 
-        // Idea: replace with handlebars
-        if (content.length > 0) {
-          for (const input of workflow.inputs ?? []) {
-            content = replaceAll(
+          if (content.length > 0) {
+            for (const input of workflow.inputs ?? []) {
+              content = replaceAll(
+                content,
+                `{{${input.key}}}`,
+                values[input.key],
+              );
+            }
+            enqueueMessage({
               content,
-              `{{${input.key}}}`,
-              values[input.key],
-            );
+              chatId,
+              attachmentIds: step.order === 0 ? attachmentIds : undefined,
+              modelOverride: (modelOverride ?? workflow.modelOverride ?? "gpt-4o-mini") as ModelOverride,
+              outputFormat:
+                step.order === workflow.steps.length - 1
+                  ? workflow.outputFormat
+                  : undefined,
+            });
           }
+        });
+        if (workflow.outputFormat) {
           enqueueMessage({
-            content,
-            chatId: chat.id,
-            attachmentIds: index === 0 ? attachmentIds : undefined,
-            modelOverride:
-              modelOverride ?? workflow.modelOverride ?? "gpt-4o-mini",
-            // existence of outputFormat without workflowExecutionId tells the server to inject additional prompt for workflow output document creation
-            outputFormat:
-              index === workflow.steps.length - 1
-                ? workflow.outputFormat
-                : undefined,
+            content: " ",
+            chatId,
+            modelOverride: (modelOverride ?? workflow.modelOverride ?? "gpt-4o-mini") as ModelOverride,
+            outputFormat: workflow.outputFormat,
+            workflowExecutionId: workflowId,
           });
         }
-      });
-      if (workflow.outputFormat) {
-        enqueueMessage({
-          content: " ",
-          chatId: chat.id,
-          modelOverride:
-            modelOverride ?? workflow.modelOverride ?? "gpt-4o-mini",
-          // existence of both outputFormat and workflowExecutionId tells the server to use the last message to create a workflow output document
-          outputFormat: workflow.outputFormat,
-          workflowExecutionId,
-        });
       }
+    } catch (error: unknown) {
+      handleGenericError(error instanceof Error ? error : new Error("Track workflow execution failed"), "workflowExecutionFailed", { source: "workflow" });
     }
     toast.success(t("workflowExecuted"));
     onAction?.();
@@ -169,6 +186,18 @@ export function WorkflowItem({
     } else {
       onInit({}, []).catch(console.error);
     }
+  };
+
+  // Create a simplified workflow object for the modal
+  const workflowForModal: SimpleWorkflow = {
+    id: workflow.id,
+    name: workflow.name,
+    description: workflow.description,
+    inputs: workflow.inputs?.map(input => ({
+      ...input,
+      type: input.type as WorkflowInputType
+    })),
+    allowDocumentUpload: workflow.allowDocumentUpload
   };
 
   return (
@@ -188,7 +217,8 @@ export function WorkflowItem({
           <div onClick={(e) => e.stopPropagation()} className="h-[22px]">
             <LeafItemDropdown
               onEdit={
-                department?.writePermission
+                // Since department only returns id, we assume write permission if we have a department
+                department?.id
                   ? () => {
                       onAction?.();
                       void navigate("/:organizationId/workflows/:workflowId", {
@@ -205,10 +235,10 @@ export function WorkflowItem({
                   workflow: { id: workflowId },
                 })
                   .then(() => utils.workflows.favorites.invalidate())
-                  .catch((e: Error) => handleGenericError(e, undefined));
+                  .catch((error: Error) => handleGenericError(error, "toggleWorkflowFavoriteFailed", { source: "workflow" }));
               }}
               onDelete={
-                department?.writePermission
+                department?.id
                   ? () => {
                       setConfirmModalOpen(true);
                     }
@@ -221,7 +251,7 @@ export function WorkflowItem({
       />
       {hasInputs && hasSteps && (
         <RunWorkflowModal
-          workflow={workflow}
+          workflow={workflowForModal}
           open={modalOpen}
           setOpen={setModalOpen}
           onSubmit={onInit}

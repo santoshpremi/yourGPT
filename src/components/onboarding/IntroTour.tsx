@@ -28,7 +28,7 @@ export function IntroTour() {
       return;
     }
 
-    if ([EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND].includes(type)) {
+    if (type === EVENTS.STEP_AFTER || type === EVENTS.TARGET_NOT_FOUND) {
       // Update state to advance the tour
       setStep(index + (action === ACTIONS.PREV ? -1 : 1));
       if (action === ACTIONS.CLOSE) {
@@ -39,7 +39,8 @@ export function IntroTour() {
 
     if (
       action === ACTIONS.CLOSE ||
-      [STATUS.SKIPPED, STATUS.FINISHED].includes(status)
+      status === STATUS.SKIPPED ||
+      status === STATUS.FINISHED
     ) {
       // Need to set our running state to false, so we can restart if we click start again.
       setRun(false);

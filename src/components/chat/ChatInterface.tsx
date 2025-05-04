@@ -31,6 +31,13 @@ import { type DocumentOutputFormat } from "../../../backend/src/document/documen
 
 export { ErrorDisplay as Catch } from "../util/ErrorDisplay";
 
+interface ErrorMetadata {
+  source: string;
+  messages?: Message[];
+  oldMessageId?: string;
+  filteredMessage?: Message;
+}
+
 interface ChatInterfaceProps {
   chatId: string;
   showSmartIterations?: boolean;
@@ -196,7 +203,7 @@ function Interface({
   }, [completed]);
 
   const setModelOverride = async (
-    model: string | null,
+    model: ModelOverride | null,
     quiet: boolean = false,
   ) => {
     if (quiet) {
@@ -214,12 +221,12 @@ function Interface({
     void utils.chat.invalidate();
   };
 
-  const getSelectedModel = () => {
+  const getSelectedModel = (): ModelOverride | null => {
     if (!chat?.modelOverride) return null;
-    const { modelOverride } = chat;
-    return !isSpecificLLM(modelOverride) || LLM_META[modelOverride].allowChat
+    const modelOverride = chat.modelOverride as ModelOverride;
+    return isSpecificLLM(modelOverride) && LLM_META[modelOverride]?.allowChat
       ? modelOverride
-      : chat.organisationDefaultModel;
+      : "automatic";
   };
 
   const selectedModel = getSelectedModel();
@@ -256,7 +263,7 @@ function Interface({
               authorId: me?.id ?? null,
               chatId,
               id: "temp",
-              attachmentIds: attachmentIds,
+              attachmentIds,
               generationModel: null,
               responseCompleted: true,
               citations: [],
@@ -264,11 +271,14 @@ function Interface({
               cancelled: false,
               ragSources: [],
               tokens: 0,
+              errorCode: null,
+              outputDocumentUrl: null
             },
           ];
 
       setProgress(undefined);
       let mergedProgress = {};
+
 
       onPrompt?.({
         prompt: message,
@@ -338,7 +348,7 @@ function Interface({
         temperature: customTemperature,
         chatId,
         modelOverride: customModel,
-        outputFormat,
+        outputFormat: outputFormat?.toString() || undefined,
         workflowExecutionId,
       });
 
@@ -415,7 +425,6 @@ function Interface({
       me?.id,
       mutateMessages,
       i18n.language,
-      apiMessages,
       customSystemPromptSuffix,
     ],
   );
@@ -432,11 +441,8 @@ function Interface({
         handleGenericError(
           new Error("no user message found before ai message"),
           "generateMessageFailed",
-          {
-            messages: apiMessages,
-            aiMessageId,
-          },
-          true,
+          { source: "chat" },
+          true
         );
       }
 
@@ -480,9 +486,9 @@ function Interface({
             new Error("no message found to edit"),
             "generateMessageFailed",
             {
-              messages: updatedMessages,
-              oldMessageId,
-            },
+              source: "chat",
+              oldMessageId
+            } as ErrorMetadata,
             true,
           );
         }
@@ -508,7 +514,9 @@ function Interface({
 
   const updateTitle = async () => {
     if (chat?.name) return;
-    await adjustTitle({ chatId });
+    // Generate a name based on the first message or use a default
+    const name = apiMessages?.[0]?.content?.slice(0, 50) || "New Chat";
+    await adjustTitle({ chatId, name });
     void utils.chat.invalidate();
   };
 
@@ -523,7 +531,7 @@ function Interface({
     const { allowChat } = LLM_META[chat.modelOverride];
 
     if (!allowChat) {
-      void setModelOverride(organization?.defaultModel ?? "gpt-4o", true);
+      void setModelOverride(organization?.defaultModel as ModelOverride ?? "gpt-4o-mini" as ModelOverride, true);
     }
   };
 
@@ -541,9 +549,7 @@ function Interface({
         // check if its this: DOMException: BodyStreamBuffer was aborted
         if (e.name === "AbortError") return;
 
-        handleGenericError(e, "messageSendFailed", {
-          filteredMessage,
-        });
+        handleGenericError(e, "messageSendFailed", { source: "chat" });
         console.error(e);
       });
       waitingForQueuedMessage.current = true;
@@ -643,7 +649,10 @@ function Interface({
           {messagesList.map((message) => (
             <ChatItem
               key={message.id}
-              chat={chat}
+              chat={{
+                ...chat,
+                artifactId: null
+              }}
               message={message}
               onEdit={async (content: string) => {
                 await editMessage(message.id, content);
@@ -685,7 +694,10 @@ function Interface({
             </div>
           )}
           <ChatInput
-            chat={chat}
+            chat={{
+              ...chat,
+              artifactId: null
+            }}
             isGenerating={!completed}
             embedded={embedded}
             model={chat.modelOverride ?? organization?.defaultModel}

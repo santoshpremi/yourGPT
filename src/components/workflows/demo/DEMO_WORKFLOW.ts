@@ -1,39 +1,42 @@
-import { type Workflow } from "../../../../backend/src/api/workflow/workflowTypes";
+import type { Workflow } from "../../../../backend/src/api/workflow/workflowTypes";
 
-export const DEMO_WORKFLOW: Workflow = {
-  id: "demo_workflow",
+interface WorkflowInput {
+  key: string;
+  name: string;
+  type: string;
+  options: Array<{ value: string; label: string }>;
+}
+
+export const DEMO_WORKFLOW: Workflow & {
+  inputs: WorkflowInput[];
+} = {
+  id: "demo",
   name: "Demo Workflow",
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  index: 0,
+  departmentId: "demo",
   description:
-    "Dies ist ein einfacher Workflow für neue Benutzer. Er hilft den Nutzern, einen unvergesslichen Flug zu planen, der dem angegebenen Land und Budget entspricht.",
+    "This is a demo workflow that helps users plan an unforgettable flight matching their specified country and budget.",
   steps: [
     {
       id: "step1",
       order: 0,
       promptTemplate:
-        "Plane einen unvergesslichen Flug nach {{destination}} für {{duration}} mit einem Budget von {{budget}}.",
+        "Plan an unforgettable flight to {{destination}} for {{duration}} with a budget of {{budget}}.",
       modelOverride: null,
     },
     {
       id: "step2",
       order: 1,
       promptTemplate:
-        "Sag dem Benutzer mit einem Satz, dass er seinen eigenen Workflow erstellen kann.",
+        "Tell the user in one sentence that they can create their own workflow.",
       modelOverride: null,
     },
   ],
   inputs: [
     { key: "budget", name: "Budget", type: "short_text", options: [] },
-    { key: "destination", name: "Reiseziel", type: "short_text", options: [] },
-    {
-      key: "duration",
-      name: "Aufenthaltsdauer",
-      type: "short_text",
-      options: [],
-    },
+    { key: "destination", name: "Destination", type: "short_text", options: [] },
+    { key: "duration", name: "Duration", type: "short_text", options: [] },
   ],
-  index: 0,
-  departmentId: "demoDepartment",
-  includedDocuments: [],
-  modelOverride: null,
-  allowDocumentUpload: false,
 };

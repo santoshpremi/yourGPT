@@ -2,7 +2,7 @@ import { Settings } from "@mui/icons-material";
 import { Badge, IconButton } from "@mui/joy";
 import { useState } from "react";
 import type { ModelOverride } from "../../../../backend/src/api/chat/chatTypes.ts";
-import { ModelSelectorModal } from "../../input/ModelSelectorModal.tsx";
+import { ModelSelectorModal } from "../../input/ModelSelectorModal";
 
 export function ChatSettingsMenu({
   selectedModel,

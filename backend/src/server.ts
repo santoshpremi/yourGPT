@@ -7,15 +7,6 @@ import cors from "cors";
 import { fileURLToPath } from "url";
 import { v4 as uuidv4 } from 'uuid';
 
-// 1. Type Declarations First
-declare global {
-  namespace Express {
-    interface Request {
-      organization: Organization;
-    }
-  }
-}
-
 interface Organization {
   id: string;
   name: string;
@@ -31,7 +22,14 @@ interface Organization {
   primaryEmail?: string;
   isSuperUserOnly?: boolean;
   acceptedGuidelines?: boolean;
-}
+} ;
+
+// Remove this declaration
+// declare module 'express-serve-static-core' {
+//   interface Request {
+//     organization: Organization;
+//   }
+// }
 
 const app: Application = express();
 const PORT = process.env.PORT || 8003;
@@ -44,18 +42,26 @@ app.use(cors({
 }));
 app.use(express.json());
 
+// Add type guard
+function hasOrganization(req: Request): req is CustomRequest & { organization: Organization } {
+  return (req as CustomRequest).organization !== undefined;
+}
+
+interface CustomRequest extends Request {
+  organization: Organization;
+}
+
+// Custom Request interface
+// interface CustomRequest extends Request {
+//   organization?: Organization;
+// }
+
 // 3. Organization Middleware
-app.use(['/api/organizations/:orgId', '/:organizationId'], 
-  (req: Request, res: Response, next: NextFunction) => {
-    const orgId = req.params.orgId || req.params.organizationId || 'default_org';
-    
-    if (!organizations.has(orgId)) {
-      organizations.set(orgId, createOrganization(orgId));
-    }
-    
-    req.organization = organizations.get(orgId)!;
-    next();
-  });
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const orgId = req.headers['x-yourgpt-organization-id'] as string;
+  (req as CustomRequest).organization = createOrganization(orgId || 'default_org');
+  next();
+});
 
 // 4. Static Files After Organization Middleware
 app.use(express.static(path.join(__dirname, '../../dist')));
@@ -69,7 +75,8 @@ app.post('/api/trial/extend', (req: Request, res: Response) => {
   res.json({ status: 'extended', months: 2 });
 });
 
-app.get("/api/organizations/:orgId/users/me", (req: Request, res: Response) => {
+app.get("/api/organizations/:orgId/users/me", (req: CustomRequest, res: Response) => {
+  // organization is now guaranteed to exist
   const org = req.organization;
   res.json({
     id: `user_${uuidv4().replace(/-/g, '').slice(0, 24)}`,
@@ -96,7 +103,9 @@ app.use(
   "/trpc",
   createExpressMiddleware({
     router: appRouter,
-    createContext: ({ req }) => ({ organization: req.organization }),
+    createContext: ({ req }: { req: CustomRequest }) => ({ 
+      organization: req.organization
+    }),
   })
 );
 

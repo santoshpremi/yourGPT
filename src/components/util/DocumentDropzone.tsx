@@ -2,7 +2,7 @@ import type { Dispatch, SetStateAction } from "react";
 import { useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { Card, IconButton, Tooltip, Typography } from "@mui/joy";
-import { DocumentChip } from "../chat/input/sources/DocumentChip.tsx";
+import { DocumentChip } from "../chat/input/sources/DocumentChip";
 import { AddCircle, Attachment } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -13,7 +13,7 @@ import {
   getExtensionsFromMimeMap,
 } from "../../../backend/src/constants/mime";
 
-import { useUploadDocumentWithToast } from "../../lib/api/documents.ts";
+import { useUploadDocumentWithToast } from "../../lib/api/documents";
 interface DocumentDropzoneProps {
   style?: SxProps;
   documentIds?: string[];

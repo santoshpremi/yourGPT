@@ -38,13 +38,15 @@ export function ErrorMessageText({
     <>
       {showQuote && (
         <Typography
-          level="body-md"
-          fontStyle="italic"
-          color="danger"
-          mb={2}
-          overflow="hidden"
-          whiteSpace="nowrap"
-          textOverflow="ellipsis"
+          component="div"
+          style={{
+            fontStyle: "italic",
+            color: "danger",
+            marginBottom: 1,
+            overflow: "hidden",
+            whiteSpace: "nowrap",
+            textOverflow: "ellipsis",
+          }}
         >
           &quot;{message.content}&quot;
         </Typography>
@@ -61,7 +63,7 @@ export function ErrorMessageText({
         )}
         <Typography whiteSpace="pre-wrap" pr={7}>
           {t("modelErrors." + errorCode + errorMessageExtension, {
-            model: LLM_META[message.generationModel ?? ""]?.name,
+            model: message.generationModel && LLM_META[message.generationModel]?.name || "",
             filterCategories,
             format: errorCodeDetails,
           })}

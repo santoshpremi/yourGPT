@@ -85,9 +85,9 @@ export default function OrganizationLayout() {
   const theme = useTheme();
 
   const guidelinesAccepted = me?.acceptedGuidelines ?? false;
-  const { mutateGuidelines } = useGuidelines();
+  const { updateGuidelines } = useGuidelines();
   const acceptGuidelines = () => {
-    mutateGuidelines({ accepted: true })
+    updateGuidelines({ accepted: true })
       .then(() => {
         void mutateMe();
       })

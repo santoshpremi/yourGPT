@@ -2,8 +2,9 @@ import {
   CREDIT_MARGIN_FACTOR,
   LLM_META,
   type LlmMetaData,
-} from "../../ai/llmMeta";
-import type { CreditUsageOptions } from "../../credits/credits.service";
+  type LlmName,
+} from "@backend/ai/llmMeta";
+import type { CreditUsageOptions } from "@backend/credits/credits.service";
 
 const CONVERSION_FACTORS: Record<LlmMetaData["price"]["unit"], number> = {
   perMillion: 1_000_000,
@@ -12,14 +13,16 @@ const CONVERSION_FACTORS: Record<LlmMetaData["price"]["unit"], number> = {
 
 const CREDIT_PER_EURO = 100;
 
-export function calculateMessageCreditUsage({
-  inputTokens,
-  outputTokens,
-  model,
-}: CreditUsageOptions["TEXT_GENERATION"]) {
-  const modelInfo = LLM_META[model];
+type TextGenerationOptions = {
+  inputTokens: number;
+  outputTokens: number;
+  model: LlmName;
+};
 
-  const costPerTokenConversionFactor = CONVERSION_FACTORS[modelInfo.price.unit];
+export function calculateMessageCreditUsage(options: TextGenerationOptions) {
+  const modelInfo = LLM_META[options.model];
+  const unit = modelInfo.price.unit;
+  const costPerTokenConversionFactor = CONVERSION_FACTORS[unit];
 
   const inputCostPerToken =
     modelInfo.price.inputTokens / costPerTokenConversionFactor;
@@ -28,7 +31,8 @@ export function calculateMessageCreditUsage({
 
   // Calculate the needed tokens and convert them to credits
   const totalCostRawCost =
-    inputTokens * inputCostPerToken + outputTokens * outputCostPerTokens;
+    options.inputTokens * inputCostPerToken +
+    options.outputTokens * outputCostPerTokens;
 
   const totalCost = totalCostRawCost * CREDIT_PER_EURO * CREDIT_MARGIN_FACTOR;
 

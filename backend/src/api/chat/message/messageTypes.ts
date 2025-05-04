@@ -4,6 +4,9 @@ import { LlmName } from "../../../ai/llmMeta";
 import { ModelOverride } from "../chatTypes";
 import { DocumentOutputFormat } from "../../../document/documentTypes";
 
+
+
+
 export const CreateMessageInput = z.object({
   content: z.string().min(1),
   language: z.string().default("en"),
@@ -53,18 +56,18 @@ export const Message = z.object({
   content: z.string(),
   createdAt: ApiDate,
   fromAi: z.boolean(),
-  responseCompleted: z.boolean().nullable(),
-  authorId: z.string().nullable(),
+  responseCompleted: z.boolean().nullable().default(null),
+  authorId: z.string().nullable().default(null),
   chatId: z.string(),
-  generationModel: LlmName.default("gpt-4o-mini" satisfies LlmName).nullable(),
+  generationModel: LlmName.nullable().default(null),
   attachmentIds: z.array(z.string()).default([]),
   ragSources: z.array(RagSource).default([]),
   citations: z.array(z.string()).default([]),
   artifactVersionId: z.string().nullable(),
   cancelled: z.boolean().nullable(),
   errorCode: z.string().nullable().optional(),
-  tokens: z.number(),
-  outputDocumentUrl: z.string().nullish(),
+  tokens: z.number().default(0),
+  outputDocumentUrl: z.string().optional().nullable(),
 });
 
 export type Message = z.infer<typeof Message>;
@@ -85,3 +88,4 @@ export type MessageGenerationProgress = {
   queryCount?: number;
   collectionCount?: number;
 };
+

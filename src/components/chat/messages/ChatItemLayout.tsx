@@ -57,12 +57,11 @@ export function ChatItemLayout({
         )}
       >
         <Card
-          size={embedded ? "sm" : undefined}
-          key={message?.id ?? "loading"}
-          color={cardColor}
-          variant={cardVariant}
+          variant="outlined"
+          color="neutral"
           className={twMerge(
-            "group flex flex-1 flex-col items-stretch overflow-x-auto",
+            "relative flex w-full flex-col rounded-xl px-4 py-2",
+            fromAi && "ml-auto bg-primary",
           )}
         >
           {children}

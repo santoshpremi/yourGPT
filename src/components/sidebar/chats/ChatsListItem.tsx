@@ -22,7 +22,18 @@ export function ChatsListItem({
   const params = useParams("/:organizationId/chats/:chatId");
   const active = params.chatId === chat?.id;
   const navigate = useNavigate();
-  const { mutateAsync: deleteChat } = trpc.chat.archive.useMutation();
+  const { mutateAsync: deleteChat } = trpc.chat.delete.useMutation();
+
+  const handleDelete = async () => {
+    if (!chat?.id) return;
+    try {
+      await deleteChat({ chatId: chat.id });
+      await utils.chat.invalidate();
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   const utils = trpc.useUtils();
   const [renameModalOpen, setRenameModalOpen] = useState(false);
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
@@ -52,7 +63,7 @@ export function ChatsListItem({
           />
         }
         singleLine={true}
-        name={chatName}
+        name={chatName as string}
         endDecorator={
           isHistoryButton ? undefined : (
             <div onClick={(e) => e.stopPropagation()} className="h-[22px]">
@@ -89,9 +100,7 @@ export function ChatsListItem({
             onSure={() => {
               toast
                 .promise(
-                  deleteChat({ chatId: chat.id }).then(() =>
-                    utils.chat.invalidate(),
-                  ),
+                  deleteChat({ chatId: chat.id }).then(() => utils.chat.invalidate()),
                   {
                     success: t("chatDeleted"),
                     error: t("chatDeleteFailed"),

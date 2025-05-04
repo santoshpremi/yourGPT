@@ -71,16 +71,15 @@ const currentOrganizationId = useParams("/:organizationId").organizationId || "d
       "x-deingpt-session-id": browserSessionKey,
       "x-deingpt-locale": currentLocale,
     } as const;
-
-    const terminalLinkCommonProps = {
-      url: trpcUrl,
-      maxURLLength: 8000,
-headers: (opts: { headers?: Record<string, string> }) => ({
-  ...opts.headers,
-  ...headers,
-}),
-      fetch: fetchWithAppVersion,
-    } as const;
+const terminalLinkCommonProps = {
+  url: trpcUrl,
+  maxURLLength: 8000,
+  headers: (opts: { headers?: Record<string, string> }) => ({
+    ...opts.headers,
+    ...headers,
+  }),
+  fetch: fetchWithAppVersion,
+} as const;
 
     return trpc.createClient({
       links: [

@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { ModelOverride } from "../../../../backend/src/api/chat/chatTypes.ts";
-import { type DocumentOutputFormat } from "../../../../backend/src/document/documentTypes.ts";
+import type { ModelOverride } from "../../../backend/src/api/chat/chatTypes.ts";
+import { type DocumentOutputFormat } from "../../../backend/src/document/documentTypes";
 
 interface QueuedMessage {
   content: string;

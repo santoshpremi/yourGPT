@@ -33,6 +33,37 @@ export const appRouter = t.router({
     check: publicProcedure.query(() => checkTrialPhase())
   }),
 
+  apiKeys: t.router({
+    enabled: t.procedure
+      .query(() => true),
+    list: t.procedure
+      .query(() => {
+        return [
+          {
+            id: "key1",
+            displayName: "Test Key",
+            createdAt: new Date(),
+          }
+        ];
+      }),
+    create: t.procedure
+      .input(z.object({ displayName: z.string() }))
+      .mutation(async ({ input }) => {
+        return {
+          id: `key_${Date.now()}`,
+          displayName: input.displayName,
+          key: `sk_test_${Math.random().toString(36).slice(2)}`,
+          createdAt: new Date()
+        };
+      }),
+    delete: t.procedure
+      .input(z.object({ id: z.string() }))
+      .mutation(async ({ input }) => {
+        // Mock delete operation
+        return true;
+      }),
+  }),
+
   artifact: t.router({
     // Add all required procedures
     getVersion: t.procedure

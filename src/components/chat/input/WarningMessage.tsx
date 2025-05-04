@@ -161,23 +161,26 @@ export function WarningMessage({
     warning.category,
   ]);
 
-  const categoryMapping = {
+  const switchToCheaperModel = () => {
+    if (cheaperModel?.name) {
+      setModelOverride(cheaperModel.name);
+      const modelName = LLM_META[cheaperModel.name]?.name ?? cheaperModel.name;
+      toast.success(t("switchedToModel", { model: modelName }));
+
+      //close the warning
+      setWarning((prev) => ({
+        ...prev,
+        show: false,
+      }));
+    }
+  };
+
+  const categoryMapping: Record<WarningCategory, number> = {
     [WarningCategory.MESSAGE_CREDIT_WARNING]: currentMessageCredits,
     [WarningCategory.CHAT_CREDIT_WARNING]: currentChatCredits,
   };
 
-  const switchToCheaperModel = () => {
-    cheaperModel?.name && setModelOverride(cheaperModel?.name);
-    toast.success(
-      t("switchedToModel", { model: LLM_META[cheaperModel?.name ?? ""].name }),
-    );
-
-    //close the warning
-    setWarning((prev) => ({
-      ...prev,
-      show: false,
-    }));
-  };
+  const warningCredits = warning.category ? Math.round(categoryMapping[warning.category]) : 0;
 
   const acceptWarning = () => {
     if (warning.category === WarningCategory.MESSAGE_CREDIT_WARNING) {
@@ -212,8 +215,8 @@ export function WarningMessage({
       <Typography textAlign="center" level="body-sm">
         <div>
           <Typography level="title-sm">{t("tip")}:</Typography>{" "}
-          {t("warnings." + warning.category, {
-            credits: Math.round(categoryMapping[warning.category ?? ""]),
+          {warning.category && t("warnings." + warning.category, {
+            credits: warningCredits,
           })}
           {cheaperModel ? (
             <>

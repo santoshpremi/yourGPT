@@ -128,14 +128,14 @@ export const allowedMimeTypesForSupportManuals = getMimeListFromMaps([
 
 // Adding a new output format here will automatically add it to the Workflow DocumentOutput UI
 export const DOCUMENT_OUTPUT_TYPE_TO_MIME_MAP = {
-  document: ["docx", "pdf", "txt"],
-  table: ["xlsx", "csv"],
-  presentation: ["pptx"],
+  document: ["docx", "pdf", "txt"] as string[],
+  table: ["xlsx", "csv"] as string[],
+  presentation: ["pptx"] as string[],
 } as const;
 
 export type DocumentOutputDataType = "document" | "table" | "presentation";
 
 export const getDocumentOutputTypeFromMime = (mimeType: string) =>
   Object.keys(DOCUMENT_OUTPUT_TYPE_TO_MIME_MAP).find((type) =>
-    DOCUMENT_OUTPUT_TYPE_TO_MIME_MAP[type].includes(mimeType),
+    DOCUMENT_OUTPUT_TYPE_TO_MIME_MAP[type as DocumentOutputDataType].includes(mimeType),
   ) as DocumentOutputDataType;

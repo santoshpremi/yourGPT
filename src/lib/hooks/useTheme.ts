@@ -4,7 +4,7 @@ import Values from "values.js";
 import { useOrganization } from "../api/organization";
 import React from "react";
 
-const indexes = [
+const  indexes = [
   "50",
   "100",
   "200",
@@ -25,10 +25,10 @@ function generatePalette(
   const values = new Values(color);
 
   const colors = values.all(20);
-  const palette = indexes.reduce((acc, index, i) => {
-    acc[index] = colors[i].hexString();
-    return acc;
-  }, {});
+const palette = indexes.reduce<Record<string, string>>((acc, index, i) => {
+  acc[index] = colors[i].hexString();
+  return acc;
+}, {});
 
   return palette;
 }

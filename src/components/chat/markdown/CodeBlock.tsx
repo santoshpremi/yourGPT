@@ -3,9 +3,9 @@ import { IconButton } from "@mui/joy";
 import type { ComponentProps } from "react";
 import React, { useEffect, useRef, useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
-import { useCopySafe } from "../../../lib/hooks/useCopySafe.tsx";
+import { useCopySafe } from "../../../lib/hooks/useCopySafe";
 
-import { Mermaid } from "./Mermaid.tsx";
+import { Mermaid } from "./Mermaid";
 
 /**
  * Renders an auto-highlighted code block with a copy button or a mermaid diagram.
