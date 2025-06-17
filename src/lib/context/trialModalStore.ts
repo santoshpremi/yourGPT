@@ -1,6 +1,6 @@
 // src/lib/context/trialModalStore.ts
 import { create } from "zustand";
-import type { PhaseUsageResponse } from "@credits/phaseUsage";
+import type { PhaseUsageResponse } from "../../../backend/src/util/credits/phaseUsage";
 
 interface TrialStore {
   status: PhaseUsageResponse;

@@ -5,7 +5,7 @@ import {
   ApiOrganization,
   ApiPatchOrganization,
 } from "../../../packages/apiTypes/src/Organization";
-import { checkTrialPhase } from '@credits/phaseUsage';
+import { checkTrialPhase } from '../util/credits/phaseUsage';
 
 const t = initTRPC.create();
 export const publicProcedure = t.procedure;

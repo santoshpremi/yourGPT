@@ -44,10 +44,8 @@ export function IntroTour() {
     ) {
       // Need to set our running state to false, so we can restart if we click start again.
       setRun(false);
-      // Update User Onboarding in BE
-      await orgApi.patch("users/me", {
-        tourCompleted: true,
-      });
+      // TODO: Implement tour completion tracking when API endpoint is available
+      // Currently the API endpoint returns 404, so we'll skip this for now
       if (status === STATUS.FINISHED) {
         setCompleted(true);
       }

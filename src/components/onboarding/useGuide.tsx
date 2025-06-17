@@ -15,9 +15,9 @@ export const useGuide = create<IntroTourStore>((set) => ({
     set({ step });
     console.log("step set to", step);
   },
-  run: true,
-  // Should default to true so that intro tour actions do not start on initial load
-  completed: true,
+  run: false, // Changed from true to false
+  // Should default to false so that intro tour can start when needed
+  completed: false, // Changed from true to false
   setRun: (run: boolean) => {
     set({ run });
     console.log("run set to", run);

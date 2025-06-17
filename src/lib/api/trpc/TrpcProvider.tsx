@@ -17,7 +17,7 @@ import { phaseLink } from "./phaseLink";
 import { toastLink } from "./toastLink";
 import { trpc } from "./trpc";
 
-const trpcUrl = "/api/trpc";
+const trpcUrl = "/trpc";
 
 const MAX_RETRIES = 3;
 

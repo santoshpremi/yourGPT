@@ -1,17 +1,75 @@
 {
-  "en": {
-    "translation": {
-      "title": "Welcome",
-      "buttons": {
-        "login": "Login",
-        "logout": "Logout",
-        "submit": "Submit"
-      },
-      "navigation": {
-        "home": "Home",
-        "about": "About",
-        "contact": "Contact"
-      }
+  "loading": "Loading...",
+  "back": "Back",
+  "close": "Close",
+  "next": "Next",
+  "skip": "Skip",
+  "open": "Open",
+  "unknown": "Unknown",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "email": "Email",
+  "dataSaved": "Data saved successfully",
+  "errors": {
+    "unknown": "An unknown error occurred"
+  },
+  "settings": {
+    "profile": "Profile Settings",
+    "tabs": {
+      "metrics": "Metrics"
+    },
+    "apiKeys": "API Keys"
+  },
+  "account": "Account",
+  "developer": "Developer",
+  "einstellungen": "Settings",
+  "switchOrganization": "Switch Organization", 
+  "poweredBy": "Powered by",
+  "trial": {
+    "pilotActive": "Pilot Active",
+    "trialActive": "Trial Active",
+    "daysLeft": "{{count}} day remaining",
+    "daysLeft_plural": "{{count}} days remaining"
+  },
+  "intro": {
+    "welcome": {
+      "title": "Welcome to YourGPT",
+      "content": "Let's take a quick tour of the features!"
+    },
+    "sidebar": {
+      "title": "Navigation",
+      "content": "This is your main navigation sidebar"
+    },
+    "firstChat": {
+      "title": "Start a New Chat",
+      "content": "Click here to start your first conversation"
+    },
+    "sendMessage": {
+      "title": "Send a Message", 
+      "content": "Type your message here and press Enter to send"
+    },
+    "workflows": {
+      "title": "Workflows",
+      "content": "Access pre-built workflows for common tasks"
+    },
+    "runWorkflow": {
+      "title": "Run Workflow",
+      "content": "Click to run this demo workflow"
     }
-  }
+  },
+  "loadingTexts": {
+    "1": "Preparing your response...",
+    "2": "Analyzing your request...",
+    "3": "Generating content...",
+    "4": "Processing information...",
+    "5": "Thinking...",
+    "6": "Almost ready...",
+    "7": "Finalizing response...",
+    "8": "Just a moment...",
+    "9": "Working on it...",
+    "10": "Nearly there..."
+  },
+  "unexpectedNetworkError": "Network error occurred",
+  "appVersionMismatch": "App version mismatch detected",
+  "updateApp": "Update App"
 }

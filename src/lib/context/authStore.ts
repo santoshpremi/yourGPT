@@ -13,8 +13,8 @@ interface AuthStore {
 export const useAuthStore = create(
   persist<AuthStore>(
     (set) => ({
-      loggedIn: false,
-      isSettling: true, // Start as true to prevent flashing on initial load
+      loggedIn: true, // Set to true for demo purposes
+      isSettling: false, // Start as false since we're logged in
       currentOrganizationId: "org_cm8yflh26064xmw01zbalts9c", // Temp hardcoded value
       setLoggedIn: (loggedIn) => set({ loggedIn }),
       startSettling: () => set({ isSettling: true }),

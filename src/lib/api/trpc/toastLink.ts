@@ -1,6 +1,6 @@
 // src/lib/api/trpc/toastLink.ts
 import type { TRPCLink } from "@trpc/client";
-import type { AppRouter } from "../../../../backend/src/api/appRouter";
+import type { AppRouter } from "../../../../backend/src/trpc";
 import { observable } from "@trpc/server/observable";
 import { toast } from "react-toastify";
 import { useAuthStore } from "../../context/authStore";

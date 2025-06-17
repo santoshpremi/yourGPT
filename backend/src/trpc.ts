@@ -10,8 +10,7 @@ import {
   ChatInfiniteQueryResultSchema,
   ChatListItem,
 } from "../../backend/src/api/chat/chatTypes.js";
-import { de, hi } from "date-fns/locale.js";
-import { p } from "react-router/dist/development/fog-of-war-Cm1iXIp7.js";
+// Removed problematic imports
 import {
   Workflow,
   WorkflowCreateInput,
@@ -389,7 +388,6 @@ const chatRouter = t.router({
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         hidden: false,
-        modelOverride: "gpt-4o-mini" as ModelOverride,
         organizationId: "org-1",
         customSystemPromptSuffix: null,
         ragMode: "OFF" as const,
@@ -407,6 +405,31 @@ const chatRouter = t.router({
       })
     )
     .mutation(() => true),
+  create: t.procedure
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string().nullable(),
+        organizationId: z.string(),
+      })
+    )
+    .mutation(async ({ input }) => {
+      // In a real app, this would save to database
+      return {
+        id: input.id,
+        name: input.name,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        organizationId: input.organizationId,
+        modelOverride: null,
+        ragMode: "OFF" as const,
+        customSourceId: null,
+        creditWarningAccepted: false,
+        artifactId: null,
+        hidden: false,
+        customSystemPromptSuffix: null,
+      };
+    }),
   getAll: t.procedure
     .input(
       z.object({
@@ -422,12 +445,9 @@ const chatRouter = t.router({
           name: "Sample Chat",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
-          modelOverride: "gpt-4",
-          organisationDefaultModel: "gpt-4",
-          ragMode: "OFF",
-          creditWarningAccepted: false,
+          organizationId: "org_cm8yflh26064xmw01zbalts9c",
         },
-      ] as unknown as ChatListItem[],
+      ],
       nextCursor: undefined,
     })),
   acceptCreditWarning: t.procedure
@@ -438,7 +458,7 @@ const chatRouter = t.router({
   delete: t.procedure
     .input(z.object({ chatId: z.string() }))
     .mutation(async ({ input }) => {
-      // Your delete logic here would normally delete from a database
+      // Your delete logic here
       return { success: true };
     }),
 });
@@ -527,6 +547,30 @@ const messageRouter = t.router({
 
 
 
+
+// Add User router
+const userRouter = t.router({
+  me: t.procedure
+    .input(z.void())
+    .query(() => ({
+      id: "user_123",
+      firstName: "Demo",
+      lastName: "User",
+      email: "demo@yourgpt.com",
+      organizationId: "org_cm8yflh26064xmw01zbalts9c",
+      isOrganizationAdmin: false,
+      tourCompleted: true,
+      roles: ["USER"],
+      jobDescription: "Developer",
+      onboarded: true,
+      isSuperUser: false,
+      company: "YourGPT",
+      imageUrl: null,
+      primaryEmail: "demo@yourgpt.com",
+      isSuperUserOnly: false,
+      acceptedGuidelines: true,
+    })),
+});
 
 export const appRouter = t.router({
   apiKeys: t.router({
@@ -680,7 +724,8 @@ export const appRouter = t.router({
   rag: ragRouter,
   chat: chatRouter,
   message: messageRouter,
-  // Add other routers he
+  user: userRouter,
+  // Add other routers here
 });
 
 export type AppRouter = typeof appRouter;

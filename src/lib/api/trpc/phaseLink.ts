@@ -1,8 +1,8 @@
 import type { TRPCLink } from "@trpc/client";
-import type { AppRouter } from "../../../../backend/src/api/appRouter";
+import type { AppRouter } from "../../../../backend/src/trpc";
 import { observable } from "@trpc/server/observable";
 import { useTrialStore } from "../../context/trialModalStore";
-import type { PhaseUsageResponse } from "@credits/phaseUsage";
+import type { PhaseUsageResponse } from "../../../../backend/src/util/credits/phaseUsage";
 
 export const phaseLink: TRPCLink<AppRouter> = () => {
   return ({ next, op }) =>

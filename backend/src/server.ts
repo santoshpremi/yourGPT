@@ -42,24 +42,20 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Add type guard
-function hasOrganization(req: Request): req is CustomRequest & { organization: Organization } {
-  return (req as CustomRequest).organization !== undefined;
-}
-
+// Custom Request interface
 interface CustomRequest extends Request {
   organization: Organization;
 }
 
-// Custom Request interface
-// interface CustomRequest extends Request {
-//   organization?: Organization;
-// }
+// Type guard function
+function isCustomRequest(req: Request): req is CustomRequest {
+  return 'organization' in req;
+}
 
 // 3. Organization Middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
   const orgId = req.headers['x-yourgpt-organization-id'] as string;
-  (req as CustomRequest).organization = createOrganization(orgId || 'default_org');
+  (req as any).organization = createOrganization(orgId || 'default_org');
   next();
 });
 
@@ -75,9 +71,9 @@ app.post('/api/trial/extend', (req: Request, res: Response) => {
   res.json({ status: 'extended', months: 2 });
 });
 
-app.get("/api/organizations/:orgId/users/me", (req: CustomRequest, res: Response) => {
-  // organization is now guaranteed to exist
-  const org = req.organization;
+app.get("/api/organizations/:orgId/users/me", (req: Request, res: Response) => {
+  const customReq = req as CustomRequest;
+  const org = customReq.organization;
   res.json({
     id: `user_${uuidv4().replace(/-/g, '').slice(0, 24)}`,
     firstName: "John",
@@ -98,13 +94,56 @@ app.get("/api/organizations/:orgId/users/me", (req: CustomRequest, res: Response
   });
 });
 
+// Add PATCH endpoint for tour completion
+app.patch("/api/organizations/:orgId/users/me", (req: Request, res: Response) => {
+  const customReq = req as CustomRequest;
+  const org = customReq.organization;
+  const { tourCompleted } = req.body;
+  
+  res.json({
+    id: `user_${uuidv4().replace(/-/g, '').slice(0, 24)}`,
+    firstName: "John",
+    lastName: "Doe",
+    email: "john@meingpt.com",
+    organizationId: req.params.orgId,
+    isOrganizationAdmin: true,
+    tourCompleted: tourCompleted || false,
+    roles: ["USER"],        
+    jobDescription: "Developer",
+    onboarded: true,
+    isSuperUser: false,
+    company: "My Company",
+    imageUrl: org.avatarUrl,
+    primaryEmail: "john@meingpt.com",
+    isSuperUserOnly: false,
+    acceptedGuidelines: true
+  });
+});
+
+// Add analytics endpoint
+app.post('/api/analytics/event', (req: Request, res: Response) => {
+  const eventData = req.body;
+  
+  // Log the analytics event (in production, you'd send this to your analytics service)
+  console.log('Analytics Event:', {
+    event: eventData.n,
+    url: eventData.u,
+    domain: eventData.d,
+    props: eventData.p,
+    timestamp: new Date().toISOString()
+  });
+  
+  // Respond with success
+  res.status(200).json({ status: 'ok' });
+});
+
 // 6. TRPC Configuration
 app.use(
   "/trpc",
   createExpressMiddleware({
     router: appRouter,
-    createContext: ({ req }: { req: CustomRequest }) => ({ 
-      organization: req.organization
+    createContext: ({ req }: { req: Request }) => ({ 
+      organization: (req as any).organization
     }),
   })
 );

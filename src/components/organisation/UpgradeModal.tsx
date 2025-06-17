@@ -1,4 +1,4 @@
-import type { PhaseUsageResponse } from "@credits/phaseUsage";
+import type { PhaseUsageResponse } from "../../../backend/src/util/credits/phaseUsage";
 import { Trans, useTranslation } from "react-i18next";
 import { useMe } from "../../lib/api/user";
 import { trpc } from "../../lib/api/trpc/trpc";
