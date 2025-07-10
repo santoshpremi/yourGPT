@@ -1,0 +1,1 @@
+export { trpc } from '../lib/api/trpc/trpc'; 

@@ -1,0 +1,31 @@
+{
+  "name": "deingpt",
+  "version": "1.0.0",
+  "description": "An AI-powered productivity platform similar to DeinGPT",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm run dev:backend\" \"pnpm run dev:frontend\"",
+    "dev:frontend": "cd frontend && pnpm run dev",
+    "dev:backend": "cd backend && pnpm run dev",
+    "build": "pnpm run build:frontend && pnpm run build:backend",
+    "build:frontend": "cd frontend && pnpm run build",
+    "build:backend": "cd backend && pnpm run build",
+    "start": "pnpm run start:backend",
+    "start:backend": "cd backend && pnpm start",
+    "install:all": "pnpm install"
+  },
+
+  "keywords": [
+    "ai",
+    "chatgpt",
+    "productivity",
+    "react",
+    "typescript",
+    "node"
+  ],
+  "author": "DeinGPT Team",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 

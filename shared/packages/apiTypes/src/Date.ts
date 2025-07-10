@@ -1,0 +1,8 @@
+import z from "zod";
+
+export const ApiDate = z.union([z.string(), z.date()]).transform((val) => {
+  if (typeof val !== "string") {
+    return val.toISOString();
+  }
+  return val;
+});
